@@ -1550,7 +1550,7 @@ function renderRankGallery() {
   const data = rankBundle();
   if (hero) hero.textContent = `ρ = ${formatRho(data.spearman)}`;
   if (lead) {
-    lead.innerHTML = `Ranking correlation between SIGN-Bench and G1 for $n=${data.n}$ models (API-fail Qwen-Max / GLM omitted). Spearman $\\rho_s=${formatRho(data.spearman)}$; Kendall $\\tau=${formatRho(data.kendall)}$. Hover any point to identify the model.`;
+    lead.innerHTML = `Ranking correlation between SIGN-Bench and G1 for $n=${data.n}$ models. Spearman $\\rho_s=${formatRho(data.spearman)}$; Kendall $\\tau=${formatRho(data.kendall)}$. Hover any point to identify the model.`;
   }
   const slides = [
     {
