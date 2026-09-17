@@ -1541,12 +1541,10 @@ section {
 
 .rank-gallery {
   position: relative;
-  display: grid;
-  grid-template-columns: 42px minmax(0, 1fr) 42px;
-  gap: 0.55rem;
-  align-items: center;
+  display: block;
   min-width: 0;
-  max-width: 100%;
+  max-width: 820px;
+  margin: 0 auto;
   overflow: hidden;
 }
 
@@ -1580,7 +1578,7 @@ section {
   min-width: 0;
   max-width: 100%;
   scroll-snap-align: start;
-  padding: 1.15rem 1.2rem 0.85rem;
+  padding: 0.95rem 1rem 0.7rem;
   box-sizing: border-box;
 }
 
@@ -1613,6 +1611,11 @@ section {
   height: auto;
   display: block;
   font-family: var(--font-sans);
+}
+
+.rank-slide-chart {
+  max-width: 680px;
+  margin: 0 auto;
 }
 
 .rank-svg-grid {
@@ -1788,10 +1791,7 @@ section {
 
 @media (max-width: 720px) {
   .rank-gallery {
-    grid-template-columns: 1fr;
-  }
-  .rank-gallery-btn {
-    display: none;
+    max-width: 100%;
   }
 }
 
@@ -1821,18 +1821,6 @@ section {
   font-weight: 800;
   color: var(--dark);
   margin: 0;
-}
-
-.g1-new-badge {
-  background: #ecfdf5;
-  color: #047857;
-  border: 1px solid #a7f3d0;
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  padding: 0.18rem 0.5rem;
-  border-radius: 9999px;
 }
 
 .g1-examples-grid {

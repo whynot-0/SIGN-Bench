@@ -11,7 +11,6 @@ function publicHttps(hostAndPath) {
 
 function modelAvatar(model) {
   const name = model.name;
-  if (name === "Gemini Robotics-ER-2") return { file: "deepmind.jpeg", label: "DeepMind" };
   if (name.startsWith("Gemini")) return { file: "google.png", label: "Google" };
   if (name.startsWith("Qwen")) return { file: "qwen.jpeg", label: "Qwen" };
   if (name.startsWith("GLM")) return { file: "zai.png", label: "Z.ai" };
@@ -1541,7 +1540,6 @@ function formatRho(value) {
 
 function renderRankGallery() {
   const track = document.getElementById("rank-gallery-track");
-  const dots = document.getElementById("rank-gallery-dots");
   const lead = document.getElementById("rank-gallery-lead");
   const hero = document.getElementById("hero-rho");
   if (!track) return;
@@ -1550,95 +1548,35 @@ function renderRankGallery() {
   if (lead) {
     lead.innerHTML = `Ranking correlation between SIGN-Bench and G1 for $n=${data.n}$ models. Spearman $\\rho_s=${formatRho(data.spearman)}$; Kendall $\\tau=${formatRho(data.kendall)}$. Hover any point to identify the model.`;
   }
-  const slides = [
-    {
-      kicker: "01 / 05",
-      title: "Rank–rank scatter",
-      copy: "Each point is one model’s rank on SIGN-Bench (x) versus G1 (y). Both axes are ranks (1 = best). The dashed line is perfect agreement; clustering on the diagonal is the ranking correlation.",
-      svg: chartRankRank(data)
-    },
-    {
-      kicker: "02 / 05",
-      title: "Dual-line rank trajectory",
-      copy: "Models ordered left-to-right by SIGN-Bench rank. Blue is the benchmark ranking; coral is the G1 ranking. Both series are ranks, not scores. Tight tracking is rank concordance.",
-      svg: chartDualLine(data)
-    },
-    {
-      kicker: "03 / 05",
-      title: "Rank slopegraph",
-      copy: "Left column: SIGN-Bench rank. Right column: G1 rank. Nearly parallel links preserve order; crossings are the models that move. Hover a line or dot to identify the model.",
-      svg: chartSlope(data)
-    },
-    {
-      kicker: "04 / 05",
-      title: "Paired-rank dumbbells",
-      copy: "Each row is one model: blue = SIGN-Bench rank, coral = G1 rank. The axis is rank position (1 = best). Bar length is the rank displacement between the two evaluations.",
-      svg: chartDumbbell(data)
-    },
-    {
-      kicker: "05 / 05",
-      title: "Rank-shift corridor",
-      copy: `Signed rank difference Δ = Bench rank − G1 rank. The vertical axis is a rank gap, not a score. Points near zero keep their place; Spearman $\\rho_s=${formatRho(data.spearman)}$ summarises the pairing.`,
-      svg: chartDeviation(data)
-    }
-  ];
-  track.innerHTML = slides.map((slide, i) => `<article class="rank-slide" data-idx="${i}">
+  const slide = {
+    title: "Rank–rank scatter",
+    copy: "Each point is one model's rank on SIGN-Bench (x) versus G1 (y). Both axes are ranks (1 = best). The dashed line is perfect agreement; clustering on the diagonal is the ranking correlation.",
+    svg: chartRankRank(data)
+  };
+  track.innerHTML = `<article class="rank-slide" data-idx="0">
     <header class="rank-slide-head">
-      <span class="rank-slide-kicker">${slide.kicker}</span>
       <h4>${slide.title}</h4>
       <p>${slide.copy}</p>
     </header>
     <div class="rank-slide-chart">${slide.svg}</div>
-  </article>`).join("");
-  dots.innerHTML = slides.map((slide, i) => `<button type="button" class="rank-dot${i === 0 ? " active" : ""}" data-idx="${i}" aria-label="${slide.title}">${String(i + 1).padStart(2, "0")}</button>`).join("");
+  </article>`;
 }
 
 function setupRankGallery() {
   const viewport = document.getElementById("rank-gallery-viewport");
   const track = document.getElementById("rank-gallery-track");
-  const dots = document.getElementById("rank-gallery-dots");
-  const prev = document.getElementById("rank-gallery-prev");
-  const next = document.getElementById("rank-gallery-next");
   if (!viewport || !track) return;
-  const slides = () => [...track.querySelectorAll(".rank-slide")];
-  const sizeSlides = () => {
+  const sizeSlide = () => {
+    const slide = track.querySelector(".rank-slide");
+    if (!slide) return;
     const width = viewport.clientWidth;
-    slides().forEach((slide) => {
-      slide.style.flexBasis = `${width}px`;
-      slide.style.width = `${width}px`;
-      slide.style.minWidth = `${width}px`;
-      slide.style.maxWidth = `${width}px`;
-    });
+    slide.style.flexBasis = `${width}px`;
+    slide.style.width = `${width}px`;
+    slide.style.minWidth = `${width}px`;
+    slide.style.maxWidth = `${width}px`;
   };
-  const go = (idx) => {
-    const list = slides();
-    const n = list.length;
-    if (!n) return;
-    const clamped = ((idx % n) + n) % n;
-    viewport.scrollTo({ left: clamped * viewport.clientWidth, behavior: "smooth" });
-    dots.querySelectorAll(".rank-dot").forEach((dot, i) => dot.classList.toggle("active", i === clamped));
-  };
-  const current = () => {
-    const w = viewport.clientWidth || 1;
-    return Math.max(0, Math.min(slides().length - 1, Math.round(viewport.scrollLeft / w)));
-  };
-  prev?.addEventListener("click", () => go(current() - 1));
-  next?.addEventListener("click", () => go(current() + 1));
-  dots?.addEventListener("click", (event) => {
-    const btn = event.target.closest(".rank-dot");
-    if (!btn) return;
-    go(Number(btn.dataset.idx));
-  });
-  viewport.addEventListener("scroll", () => {
-    const idx = current();
-    dots.querySelectorAll(".rank-dot").forEach((dot, i) => dot.classList.toggle("active", i === idx));
-  }, { passive: true });
-  sizeSlides();
-  window.addEventListener("resize", () => {
-    const idx = current();
-    sizeSlides();
-    viewport.scrollTo({ left: idx * viewport.clientWidth });
-  });
+  sizeSlide();
+  window.addEventListener("resize", sizeSlide);
 }
 
 function setupRankTooltips() {
