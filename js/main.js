@@ -2,7 +2,6 @@
  * SIGN-Bench: Academic Project Homepage Scripts
  * Interactive Leaderboard (sorting, filtering, searching, model page links)
  * Interactive Sample Carousel (with real images from figure_sample_originals)
- * BibTeX Copy & Utilities
  * Strictly Anonymous - No author or debug paths
  */
 
@@ -10,17 +9,18 @@ function publicHttps(hostAndPath) {
   return String.fromCharCode(104, 116, 116, 112, 115, 58, 47, 47) + hostAndPath;
 }
 
-function anonymousRepoPath() {
-  const match = window.location.pathname.match(/\/(?:w|r)\/([^/]+)/);
-  const repoId = match ? match[1] : "SIGN-Bench-7C13";
-  return "/r/" + repoId + "/";
-}
-
-function setupAnonymousRepoLinks() {
-  const href = anonymousRepoPath();
-  document.querySelectorAll("[data-anon-repo]").forEach((el) => {
-    el.setAttribute("href", href);
-  });
+function modelOrg(model) {
+  const name = model.name;
+  if (name.startsWith("Gemini")) return { id: "google", label: "Google" };
+  if (name.startsWith("Qwen")) return { id: "qwen", label: "Qwen / Alibaba" };
+  if (name.startsWith("GLM")) return { id: "zhipu", label: "Zhipu AI" };
+  if (name.startsWith("Cosmos")) return { id: "nvidia", label: "NVIDIA" };
+  if (name.startsWith("InternVL") || name.startsWith("VeBrain")) return { id: "opengvlab", label: "OpenGVLab" };
+  if (name.startsWith("HY-Embodied")) return { id: "tencent", label: "Tencent" };
+  if (name.startsWith("RynnBrain")) return { id: "alibaba", label: "Alibaba DAMO" };
+  if (name.startsWith("RoboBrain")) return { id: "baai", label: "BAAI" };
+  if (name.startsWith("Embodied-R1")) return { id: "embodiedr1", label: "Embodied-R1" };
+  return { id: "qwen", label: "Model" };
 }
 
 // ==============================================================================
@@ -547,6 +547,7 @@ function renderLeaderboard() {
       <td class="col-rank">${rankHtml}</td>
       <td class="col-model">
         <a href="#" data-ext="${model.link}" class="model-link" title="${model.category === "proprietary" ? "Open official technical blog for" : "Open Hugging Face page for"} ${model.name}">
+          <img class="org-icon" src="images/orgs/${modelOrg(model).id}.svg" alt="${modelOrg(model).label}" title="${modelOrg(model).label}" width="18" height="18">
           ${model.name}
           <svg class="external-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
@@ -803,36 +804,7 @@ function setupCarouselEvents() {
 }
 
 // ==============================================================================
-// 5. BibTeX Copy & Utility
-// ==============================================================================
-
-function setupCopyBibtex() {
-  const copyBtn = document.getElementById("btn-copy-bibtex");
-  const codeElem = document.getElementById("bibtex-code");
-
-  if (!copyBtn || !codeElem) return;
-
-  copyBtn.addEventListener("click", async () => {
-    try {
-      await navigator.clipboard.writeText(codeElem.innerText);
-      const originalText = copyBtn.innerHTML;
-      copyBtn.innerHTML = `
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-        Copied!
-      `;
-      setTimeout(() => {
-        copyBtn.innerHTML = originalText;
-      }, 2000);
-    } catch (err) {
-      console.error("Failed to copy BibTeX: ", err);
-    }
-  });
-}
-
-// ==============================================================================
-// 6. Initialization
+// 5. Initialization
 // ==============================================================================
 function setupG1Lightbox() {
   const lightbox = document.getElementById("g1-lightbox");
@@ -875,12 +847,10 @@ function renderFormulas(root = document.body) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  setupAnonymousRepoLinks();
   renderLeaderboard();
   setupLeaderboardEvents();
   renderCarousel();
   setupCarouselEvents();
-  setupCopyBibtex();
   setupG1Lightbox();
   renderFormulas();
 });

@@ -10,8 +10,8 @@
   <meta name="keywords" content="SIGN-Bench, VLM, Human-Robot Interaction, Embodied AI, Social Benchmark, Person Localization">
   
   <!-- Local styles only; keep off-site URLs out of markup -->
-  <link rel="stylesheet" href="css/style.css?v=2">
-  <link rel="stylesheet" href="vendor/katex/katex.min.css?v=2">
+  <link rel="stylesheet" href="css/style.css?v=3">
+  <link rel="stylesheet" href="vendor/katex/katex.min.css?v=3">
 </head>
 <body>
 
@@ -28,15 +28,6 @@
         <li><a href="#leaderboard" class="nav-link">Leaderboard</a></li>
         <li><a href="#samples" class="nav-link">Sample Cases</a></li>
         <li><a href="#real-robot" class="nav-link">Real-World Robot</a></li>
-        <li><a href="#citation" class="nav-link">Citation</a></li>
-        <li>
-          <a href="/r/SIGN-Bench-7C13/" data-anon-repo target="_blank" rel="noopener noreferrer" class="nav-btn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-            </svg>
-            Anonymous Repo
-          </a>
-        </li>
       </ul>
     </div>
   </nav>
@@ -63,22 +54,6 @@
 
       <!-- Action Buttons -->
       <div class="hero-links">
-        <span class="btn btn-primary btn-disabled" title="Anonymous paper draft (double-blind submission)">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-            <polyline points="14 2 14 8 20 8"></polyline>
-            <line x1="16" y1="13" x2="8" y2="13"></line>
-            <line x1="16" y1="17" x2="8" y2="17"></line>
-            <polyline points="10 9 9 9 8 9"></polyline>
-          </svg>
-          Paper (Anonymous)
-        </span>
-        <a href="/r/SIGN-Bench-7C13/" data-anon-repo target="_blank" rel="noopener noreferrer" class="btn btn-dark">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-          </svg>
-          Code & Data (Anonymous)
-        </a>
         <a href="#leaderboard" class="btn btn-outline">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 3v18h18"></path>
@@ -180,16 +155,16 @@
             <!-- Metric Columns Header -->
             <tr>
               <!-- Overall Metrics -->
-              <th class="sortable col-gated-header" data-sort="overall.gated" title="Joint localization and exact-match success over all items">
+              <th class="sortable col-gated-header" data-sort="overall.gated" title="Joint localization and exact-match success over all items (S = 100 p A_pass)">
                 Gated Acc. <span class="sort-icon">▼</span>
               </th>
-              <th class="sortable" data-sort="overall.per" title="Localization pass rate at IoU >= 0.5">
+              <th class="sortable" data-sort="overall.per" title="Stage 1 localization pass rate at IoU >= 0.5">
                 Human Per. <span class="sort-icon">↕</span>
               </th>
-              <th class="sortable" data-sort="overall.nonverbal" title="Nonverbal cue understanding exact-match on items passing localization">
+              <th class="sortable" data-sort="overall.nonverbal" title="Exact-match accuracy on items passing localization (Social Signal Understanding)">
                 Nonverbal Und. <span class="sort-icon">↕</span>
               </th>
-              <th class="sortable" data-sort="overall.social" title="Social reasoning exact-match on items passing localization">
+              <th class="sortable" data-sort="overall.social" title="Exact-match accuracy on items passing localization (Social Reasoning)">
                 Social Reason. <span class="sort-icon">↕</span>
               </th>
 
@@ -232,13 +207,13 @@
       <div class="table-notes">
         <p><strong>Metric Definitions:</strong></p>
         <p>
-          • <strong>Gated Acc. (Primary Metric)</strong>: Joint person localization and semantic exact-match success over all benchmark items ($S = p \times A$). Shaded in light blue.
+          • <strong>Gated Acc. (Primary Metric)</strong>: Joint localization and exact-match success over all items, $S=\dfrac{100}{N}\sum_{i\in\mathcal{I}_{\mathrm{pass}}}a_i$. For $M&gt;0$ this equals $S=100\,p\,A_{\mathrm{pass}}$. Shading marks the primary metric, not score magnitude.
         </p>
         <p>
-          • <strong>Human Per.</strong>: Stage 1 person localization pass rate at $\mathrm{IoU} \ge 0.5$.
+          • <strong>Human Per.</strong>: Stage 1 localization pass rate $p=M/N$ at $\mathrm{IoU}\ge 0.5$, with one-to-one, role-consistent matching of all required boxes.
         </p>
         <p>
-          • <strong>Nonverbal Und. & Social Reason.</strong>: Exact-match accuracy on items passing Stage 1 localization within the corresponding capability level.
+          • <strong>Nonverbal Und. &amp; Social Reason.</strong>: Exact-match accuracy $A_{\mathrm{pass}}$ on items that pass localization, within the corresponding capability level. Multi-select items require all and only the correct options.
         </p>
         <p>
           • <span class="score-best">Bold</span> denotes the best result; <span class="score-second">underline</span> denotes the second-best result within the active filter view.
@@ -421,47 +396,7 @@
   </div>
 
   <!-- ==============================================================================
-       7. BibTeX Citation Section (Anonymous)
-       ============================================================================== -->
-  <section id="citation" class="citation-section">
-    <div class="container">
-      <div class="section-header">
-        <span class="section-tag">Reference</span>
-        <h2 class="section-title">BibTeX Citation</h2>
-        <p class="section-subtitle">
-          If you find SIGN-Bench useful for your research, please consider citing our work.
-        </p>
-      </div>
-
-      <div class="citation-box">
-        <div class="citation-header">
-          <span class="citation-title">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-            </svg>
-            BibTeX (Anonymous Format)
-          </span>
-          <button id="btn-copy-bibtex" class="btn-copy">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-            </svg>
-            Copy Citation
-          </button>
-        </div>
-        <pre class="citation-code"><code id="bibtex-code">@article{signbench2026,
-  title={SIGN-Bench: Benchmarking Person-Grounded Nonverbal Social Understanding in Vision-Language Models},
-  author={Anonymous Authors},
-  journal={Under Review},
-  year={2026}
-}</code></pre>
-      </div>
-    </div>
-  </section>
-
-  <!-- ==============================================================================
-       8. Footer (Strictly Anonymous)
+       Footer
        ============================================================================== -->
   <footer class="footer">
     <div class="container">
@@ -469,14 +404,13 @@
         <a href="#leaderboard" class="footer-link">Leaderboard</a>
         <a href="#samples" class="footer-link">Sample Cases</a>
         <a href="#real-robot" class="footer-link">Real-World Robot</a>
-        <a href="/r/SIGN-Bench-7C13/" data-anon-repo target="_blank" rel="noopener noreferrer" class="footer-link">Anonymous Code</a>
       </div>
     </div>
   </footer>
 
   <!-- Scripts -->
-  <script src="vendor/katex/katex.min.js?v=2"></script>
-  <script src="vendor/katex/auto-render.min.js?v=2"></script>
-  <script src="js/main.js?v=2"></script>
+  <script src="vendor/katex/katex.min.js?v=3"></script>
+  <script src="vendor/katex/auto-render.min.js?v=3"></script>
+  <script src="js/main.js?v=3"></script>
 </body>
 </html>
