@@ -926,7 +926,7 @@ section {
 
 .heatmap-table th.heatmap-model-h,
 .heatmap-model {
-  width: 13.75rem;
+  width: 14.5rem;
   text-align: left;
   background: var(--white);
   position: sticky;
@@ -977,8 +977,9 @@ section {
 }
 
 .heatmap-gap {
-  width: 10px;
-  min-width: 10px;
+  width: 8px;
+  min-width: 8px;
+  max-width: 8px;
   padding: 0 !important;
 }
 
