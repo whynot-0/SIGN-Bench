@@ -23,6 +23,23 @@ function modelOrg(model) {
   return { id: "qwen", label: "Model" };
 }
 
+const ORG_ICONS = {
+  google: '<svg class="org-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>',
+  qwen: '<svg class="org-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#615CED"/><circle cx="11" cy="11" r="5.2" fill="none" stroke="#fff" stroke-width="2.2"/><path d="M14.8 14.8 L18.2 18.2" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>',
+  zhipu: '<svg class="org-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#0F62FE"/><path d="M6.5 7.2h11v2.1H11.4L16.8 16.8H6.5v-2.1h6.2L6.5 7.2z" fill="#fff"/></svg>',
+  nvidia: '<svg class="org-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#76B900"/><path fill="#fff" d="M6.2 14.8c2.6 1.5 5.4 2.2 8.5 2.2 1.6 0 3.1-.2 4.5-.6-1.8-3.1-5-5.2-8.8-6.1-1.6-.4-2.7.4-2.7 1.6 0 .7.4 1.5 1.3 2.2-1.1-.2-2-.7-2.8-1.3z"/></svg>',
+  tencent: '<svg class="org-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#0052D9"/><circle cx="12" cy="10.2" r="3.4" fill="#fff"/><ellipse cx="12" cy="17.4" rx="5.4" ry="3.1" fill="#fff"/><circle cx="10.7" cy="9.6" r=".7" fill="#0052D9"/><circle cx="13.3" cy="9.6" r=".7" fill="#0052D9"/></svg>',
+  opengvlab: '<svg class="org-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#1D4ED8"/><path d="M7 16V8h2.1c2.3 0 3.7 1.3 3.7 3.9S11.4 16 9.1 16H7zm2.1-1.7c1.2 0 1.8-.7 1.8-2.2S10.3 9.8 9.1 9.8H8.8v4.5h.3z" fill="#fff"/><path d="M14.2 16V8h4.8v1.7h-3v1.4h2.7v1.6h-2.7V16h-1.8z" fill="#fff"/></svg>',
+  alibaba: '<svg class="org-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#FF6A00"/><path fill="#fff" d="M6.2 16.2L10.1 7h2.1l3.9 9.2h-2.2l-.7-1.8H9.1l-.7 1.8H6.2zm3.4-3.5h3.1L11.2 9.2 9.6 12.7z"/></svg>',
+  baai: '<svg class="org-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#0F172A"/><path fill="#38BDF8" d="M5.5 16.4V7.6h3.1c2.1 0 3.3 1 3.3 2.5 0 .9-.5 1.7-1.3 2.1 1.1.3 1.8 1.2 1.8 2.3 0 1.6-1.3 2.9-3.6 2.9H5.5zm2.1-5.2h.9c.9 0 1.4-.4 1.4-1.1S8.5 9 7.6 9H7.6v2.2zm0 3.6h1.1c1 0 1.6-.5 1.6-1.3s-.6-1.2-1.6-1.2H7.6v2.5z"/><path fill="#fff" d="M15.2 16.4L12.8 7.6h2.1l1.3 5.4 1.3-5.4h2.1l-2.4 8.8h-2z"/></svg>',
+  embodiedr1: '<svg class="org-icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#0D9488"/><rect x="7.2" y="6.4" width="9.6" height="8.2" rx="2.2" fill="#fff"/><circle cx="10.2" cy="10" r="1.05" fill="#0D9488"/><circle cx="13.8" cy="10" r="1.05" fill="#0D9488"/><rect x="10.6" y="14.2" width="2.8" height="2.2" rx=".6" fill="#fff"/><rect x="8.2" y="16.4" width="7.6" height="1.8" rx=".7" fill="#ccfbf1"/></svg>'
+};
+
+function orgIconHtml(model) {
+  const org = modelOrg(model);
+  return `<span class="org-icon-wrap" title="${org.label}">${ORG_ICONS[org.id]}</span>`;
+}
+
 // ==============================================================================
 // 1. Leaderboard Data (26 Models with Verified Working Target URLs)
 // Host/path only so the anonymizer does not replace model pages with XXXX.
@@ -547,7 +564,7 @@ function renderLeaderboard() {
       <td class="col-rank">${rankHtml}</td>
       <td class="col-model">
         <a href="#" data-ext="${model.link}" class="model-link" title="${model.category === "proprietary" ? "Open official technical blog for" : "Open Hugging Face page for"} ${model.name}">
-          <img class="org-icon" src="images/orgs/${modelOrg(model).id}.svg" alt="${modelOrg(model).label}" title="${modelOrg(model).label}" width="18" height="18">
+          ${orgIconHtml(model)}
           ${model.name}
           <svg class="external-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
