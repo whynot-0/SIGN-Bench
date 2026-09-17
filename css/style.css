@@ -1825,8 +1825,9 @@ section {
 
 .g1-examples-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr;
   gap: 0.7rem;
+  max-width: 920px;
 }
 
 .g1-example-label {
@@ -1844,6 +1845,10 @@ section {
   gap: 1.5rem;
   max-width: 1180px;
   margin: 0 auto;
+}
+
+.g1-category > .g1-trial-card {
+  max-width: 920px;
 }
 
 .g1-trial-card {
