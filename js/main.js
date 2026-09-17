@@ -879,15 +879,15 @@ function lerp(a, b, t) {
 }
 
 function heatmapRgb(value) {
-  const t = Math.max(0, Math.min(1, value / 70));
+  const t = Math.max(0, Math.min(1, Math.pow(value / 72, 0.9)));
   const stops = [
-    [0.00, [236, 252, 203]],
-    [0.18, [167, 243, 208]],
-    [0.36, [94, 234, 212]],
-    [0.52, [34, 211, 238]],
-    [0.68, [56, 189, 248]],
-    [0.84, [37, 99, 235]],
-    [1.00, [30, 58, 138]]
+    [0.00, [246, 244, 239]],
+    [0.16, [220, 214, 202]],
+    [0.32, [176, 190, 204]],
+    [0.50, [122, 148, 178]],
+    [0.68, [72, 108, 156]],
+    [0.84, [36, 74, 132]],
+    [1.00, [14, 32, 74]]
   ];
   let i = 0;
   while (i < stops.length - 1 && t > stops[i + 1][0]) i += 1;
@@ -903,7 +903,7 @@ function heatmapRgb(value) {
 
 function heatmapTextColor(rgb) {
   const y = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255;
-  return y > 0.58 ? "#0f172a" : "#f8fafc";
+  return y > 0.55 ? "#1c1917" : "#f8f5ef";
 }
 
 function heatmapCell(value, extraClass) {
@@ -947,7 +947,627 @@ function renderCapabilityHeatmaps() {
 }
 
 // ==============================================================================
-// 6. Initialization
+// 6. G1 hardware table + rank-concordance gallery
+// ==============================================================================
+const G1_GROUPS = [
+  {
+    title: "API Models",
+    rows: [
+      { name: "Gemini 3.7 Flash", acc: 70.9, iou: 93.6, signal: 89.4, reason: 64.3 },
+      { name: "Gemini 3.1 Pro", acc: 58.2, iou: 94.5, signal: 67.4, reason: 56.9 },
+      { name: "Gemini Robotics-ER-2", acc: 56.4, iou: 99.1, signal: 54.0, reason: 59.3 },
+      { name: "GLM-5.3-Flash", acc: 0.0, iou: 0.0, signal: null, reason: null, apiFail: true },
+      { name: "Qwen-Max", acc: 0.0, iou: 0.0, signal: null, reason: null, apiFail: true }
+    ]
+  },
+  {
+    title: "Open-Source General VLMs",
+    rows: [
+      { name: "Qwen3.8-27B", acc: 59.1, iou: 94.5, signal: 66.7, reason: 58.9 },
+      { name: "Qwen3.5-27B", acc: 54.5, iou: 95.5, signal: 62.5, reason: 52.6 },
+      { name: "Qwen3.6-27B", acc: 54.5, iou: 96.4, signal: 58.3, reason: 55.2 },
+      { name: "Cosmos3-Nano", acc: 51.8, iou: 92.7, signal: 64.6, reason: 48.1 },
+      { name: "Qwen3.5-35B-A3B", acc: 50.9, iou: 94.5, signal: 59.2, reason: 49.1 },
+      { name: "Qwen3-VL-32B", acc: 43.6, iou: 94.5, signal: 54.2, reason: 39.3 },
+      { name: "Qwen3.6-35B-A3B", acc: 41.8, iou: 93.6, signal: 52.1, reason: 38.2 },
+      { name: "Qwen3.5-0.8B", acc: 40.9, iou: 94.5, signal: 35.4, reason: 50.0 },
+      { name: "Qwen3.5-4B", acc: 40.9, iou: 94.5, signal: 43.8, reason: 42.9 },
+      { name: "Qwen3-VL-4B", acc: 40.0, iou: 93.6, signal: 48.9, reason: 37.5 },
+      { name: "Qwen3.5-2B", acc: 35.5, iou: 91.8, signal: 35.4, reason: 41.5 },
+      { name: "InternVL3.5-30B-A3B", acc: 14.5, iou: 36.4, signal: 58.8, reason: 26.1 },
+      { name: "InternVL3.5-38B", acc: 12.7, iou: 27.3, signal: 42.9, reason: 50.0 }
+    ]
+  },
+  {
+    title: "Open-Source Embodied VLMs",
+    rows: [
+      { name: "HY-Embodied-0.5-X-4B-A2B", acc: 38.2, iou: 88.2, signal: 54.3, reason: 33.3 },
+      { name: "RoboBrain2.0-32B", acc: 38.2, iou: 74.5, signal: 57.9, reason: 45.5 },
+      { name: "RynnBrain1.1-2B", acc: 36.4, iou: 62.7, signal: 61.1, reason: 54.5 },
+      { name: "HY-Embodied-0.5-4B-A2B", acc: 35.5, iou: 89.1, signal: 52.2, reason: 28.8 },
+      { name: "HY-Embodied-VLM-1.0-30B-A3B", acc: 35.5, iou: 89.1, signal: 50.0, reason: 30.8 },
+      { name: "RynnBrain-30B-A3B", acc: 30.0, iou: 55.5, signal: 59.4, reason: 48.3 }
+    ]
+  }
+];
+
+const RANK_CAT = {
+  proprietary: { fill: "#1d4ed8", label: "API" },
+  general: { fill: "#0f766e", label: "General VLM" },
+  embodied: { fill: "#6d28d9", label: "Embodied VLM" }
+};
+
+function escXml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function mean(values) {
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
+function stdev(values) {
+  const m = mean(values);
+  return Math.sqrt(values.reduce((sum, value) => sum + (value - m) ** 2, 0) / (values.length - 1));
+}
+
+function rankHighIsBest(values) {
+  const indexed = values.map((value, i) => ({ value, i }));
+  indexed.sort((a, b) => b.value - a.value || a.i - b.i);
+  const ranks = new Array(values.length);
+  for (let i = 0; i < indexed.length; ) {
+    let j = i;
+    while (j < indexed.length && indexed[j].value === indexed[i].value) j += 1;
+    const avg = (i + 1 + j) / 2;
+    for (let k = i; k < j; k += 1) ranks[indexed[k].i] = avg;
+    i = j;
+  }
+  return ranks;
+}
+
+function uniqueOrderRanks(values, names) {
+  const indexed = values.map((value, i) => ({ value, name: names[i], i }));
+  indexed.sort((a, b) => b.value - a.value || a.name.localeCompare(b.name));
+  const ranks = new Array(values.length);
+  indexed.forEach((item, pos) => {
+    ranks[item.i] = pos + 1;
+  });
+  return ranks;
+}
+
+function pearson(xs, ys) {
+  const n = xs.length;
+  const mx = mean(xs);
+  const my = mean(ys);
+  let num = 0;
+  let dx = 0;
+  let dy = 0;
+  for (let i = 0; i < n; i += 1) {
+    const a = xs[i] - mx;
+    const b = ys[i] - my;
+    num += a * b;
+    dx += a * a;
+    dy += b * b;
+  }
+  return num / Math.sqrt(dx * dy);
+}
+
+function kendallTau(xs, ys) {
+  let conc = 0;
+  let disc = 0;
+  let extraX = 0;
+  let extraY = 0;
+  const n = xs.length;
+  for (let i = 0; i < n; i += 1) {
+    for (let j = i + 1; j < n; j += 1) {
+      const dx = Math.sign(xs[i] - xs[j]);
+      const dy = Math.sign(ys[i] - ys[j]);
+      if (dx === 0 && dy === 0) continue;
+      if (dx === 0) extraX += 1;
+      else if (dy === 0) extraY += 1;
+      else if (dx === dy) conc += 1;
+      else disc += 1;
+    }
+  }
+  const denom = Math.sqrt((conc + disc + extraX) * (conc + disc + extraY));
+  return denom === 0 ? 0 : (conc - disc) / denom;
+}
+
+function olsFit(xs, ys) {
+  const n = xs.length;
+  const mx = mean(xs);
+  const my = mean(ys);
+  let sxx = 0;
+  let sxy = 0;
+  let sse = 0;
+  for (let i = 0; i < n; i += 1) {
+    sxx += (xs[i] - mx) ** 2;
+    sxy += (xs[i] - mx) * (ys[i] - my);
+  }
+  const slope = sxy / sxx;
+  const intercept = my - slope * mx;
+  for (let i = 0; i < n; i += 1) {
+    const pred = intercept + slope * xs[i];
+    sse += (ys[i] - pred) ** 2;
+  }
+  const se = Math.sqrt(sse / (n - 2));
+  return { intercept, slope, mx, sxx, se, n };
+}
+
+function shortModelName(name) {
+  return name
+    .replace("HY-Embodied-VLM-1.0-30B-A3B", "HY-VLM-1.0")
+    .replace("HY-Embodied-0.5-X-4B-A2B", "HY-0.5-X")
+    .replace("HY-Embodied-0.5-4B-A2B", "HY-0.5")
+    .replace("Gemini Robotics-ER-2", "G. Robotics")
+    .replace("Gemini 3.7 Flash", "G. 3.7")
+    .replace("Gemini 3.1 Pro", "G. 3.1")
+    .replace("InternVL3.5-30B-A3B", "InternVL-30B")
+    .replace("InternVL3.5-38B", "InternVL-38B")
+    .replace("RoboBrain2.0-32B", "RoboBrain")
+    .replace("RynnBrain1.1-2B", "Rynn-2B")
+    .replace("RynnBrain-30B-A3B", "Rynn-30B")
+    .replace("Qwen3.5-35B-A3B", "Qwen3.5-35B")
+    .replace("Qwen3.6-35B-A3B", "Qwen3.6-35B")
+    .replace("Cosmos3-Nano", "Cosmos-Nano");
+}
+
+function g1FlatRows() {
+  return G1_GROUPS.flatMap((group) => group.rows);
+}
+
+function g1MarkClass(column, value) {
+  const nums = g1FlatRows().map((row) => row[column]).filter((v) => typeof v === "number");
+  const uniq = [...new Set(nums)].sort((a, b) => b - a);
+  if (value === uniq[0]) return "score-best";
+  if (value === uniq[1]) return "score-second";
+  return "";
+}
+
+function g1ScoreCell(column, value, extraClass) {
+  if (value == null) return `<td class="g1-na">—</td>`;
+  const cls = [extraClass, g1MarkClass(column, value)].filter(Boolean).join(" ");
+  return `<td class="${cls}">${value.toFixed(1)}</td>`;
+}
+
+function renderG1Table() {
+  const root = document.getElementById("g1-table-root");
+  if (!root) return;
+  const body = G1_GROUPS.map((group) => {
+    const rows = group.rows.map((row) => {
+      const fail = row.apiFail ? ` class="g1-row-fail"` : "";
+      return `<tr${fail}>
+        <td class="heatmap-model"><span class="heatmap-model-inner">${orgIconHtml(row)}${row.name}</span></td>
+        ${g1ScoreCell("acc", row.acc, "col-gated")}
+        ${g1ScoreCell("iou", row.iou)}
+        ${g1ScoreCell("signal", row.signal)}
+        ${g1ScoreCell("reason", row.reason)}
+      </tr>`;
+    }).join("");
+    return `<tr class="g1-group-row"><td colspan="5">${group.title}</td></tr>${rows}`;
+  }).join("");
+  root.innerHTML = `<div class="table-wrapper g1-table-wrap">
+    <table class="leaderboard-table g1-table">
+      <thead>
+        <tr>
+          <th class="col-model">Model</th>
+          <th class="col-gated-header">Acc.</th>
+          <th>IoU ≥ 0.5</th>
+          <th>Social Signal Understanding</th>
+          <th>Social Reasoning</th>
+        </tr>
+      </thead>
+      <tbody>${body}</tbody>
+    </table>
+  </div>
+  <p class="table-notes g1-table-note">Bold / underline: best / second-best. Acc. is the primary cascade metric. Dashes mark Stage-2 scores that are undefined when localization never passes.</p>`;
+}
+
+function pairedRankRows() {
+  return g1FlatRows()
+    .filter((row) => !row.apiFail)
+    .map((row) => {
+      const bench = LEADERBOARD_DATA.find((model) => model.name === row.name);
+      if (!bench) return null;
+      return {
+        name: row.name,
+        short: shortModelName(row.name),
+        category: bench.category,
+        bench: bench.overall.gated,
+        hr: bench.hr.gated,
+        g1: row.acc
+      };
+    })
+    .filter(Boolean);
+}
+
+function rankBundle() {
+  const rows = pairedRankRows();
+  const names = rows.map((row) => row.name);
+  const bench = rows.map((row) => row.bench);
+  const hr = rows.map((row) => row.hr);
+  const g1 = rows.map((row) => row.g1);
+  const benchRank = uniqueOrderRanks(bench, names);
+  const hrRank = uniqueOrderRanks(hr, names);
+  const g1Rank = uniqueOrderRanks(g1, names);
+  const annotated = rows.map((row, i) => ({
+    ...row,
+    benchRank: benchRank[i],
+    hrRank: hrRank[i],
+    g1Rank: g1Rank[i]
+  }));
+  return {
+    rows: annotated,
+    n: annotated.length,
+    spearman: pearson(rankHighIsBest(bench), rankHighIsBest(g1)),
+    spearmanHr: pearson(rankHighIsBest(hr), rankHighIsBest(g1)),
+    kendall: kendallTau(bench, g1),
+    pearson: pearson(bench, g1)
+  };
+}
+
+function niceTicks(min, max, count) {
+  const span = max - min || 1;
+  const raw = span / (count - 1);
+  const mag = 10 ** Math.floor(Math.log10(raw));
+  const norm = raw / mag;
+  const step = (norm >= 7.5 ? 10 : norm >= 3 ? 5 : norm >= 1.5 ? 2 : 1) * mag;
+  const start = Math.floor(min / step) * step;
+  const ticks = [];
+  for (let v = start; v <= max + step * 0.01; v += step) ticks.push(Number(v.toFixed(8)));
+  return ticks;
+}
+
+function svgLegend() {
+  const items = [
+    ["proprietary", 0],
+    ["general", 78],
+    ["embodied", 188]
+  ];
+  return items.map(([key, x]) => {
+    const cat = RANK_CAT[key];
+    return `<g transform="translate(${x},0)">
+      <circle cx="5" cy="8" r="4.5" fill="${cat.fill}"/>
+      <text x="14" y="12" class="rank-svg-legend">${cat.label}</text>
+    </g>`;
+  }).join("");
+}
+
+function chartScatter(data) {
+  const xs = data.rows.map((row) => row.bench);
+  const ys = data.rows.map((row) => row.g1);
+  const fit = olsFit(xs, ys);
+  const W = 760;
+  const H = 430;
+  const L = 52;
+  const R = 18;
+  const T = 36;
+  const B = 48;
+  const xmin = 10;
+  const xmax = 54;
+  const ymin = 8;
+  const ymax = 76;
+  const xOf = (v) => L + ((v - xmin) / (xmax - xmin)) * (W - L - R);
+  const yOf = (v) => T + (1 - (v - ymin) / (ymax - ymin)) * (H - T - B);
+  const x0 = xmin;
+  const x1 = xmax;
+  const y0 = fit.intercept + fit.slope * x0;
+  const y1 = fit.intercept + fit.slope * x1;
+  const band = [];
+  for (let i = 0; i <= 20; i += 1) {
+    const x = xmin + (i / 20) * (xmax - xmin);
+    const yhat = fit.intercept + fit.slope * x;
+    const seFit = fit.se * Math.sqrt(1 / fit.n + ((x - fit.mx) ** 2) / fit.sxx);
+    band.push({ x, lo: yhat - 1.96 * seFit, hi: yhat + 1.96 * seFit });
+  }
+  const bandPath = [
+    `M ${xOf(band[0].x)} ${yOf(band[0].hi)}`,
+    ...band.map((p) => `L ${xOf(p.x)} ${yOf(p.hi)}`),
+    ...band.slice().reverse().map((p) => `L ${xOf(p.x)} ${yOf(p.lo)}`),
+    "Z"
+  ].join(" ");
+  const xt = niceTicks(xmin, xmax, 6).filter((v) => v >= xmin && v <= xmax);
+  const yt = niceTicks(ymin, ymax, 7).filter((v) => v >= ymin && v <= ymax);
+  const grid = [
+    ...xt.map((v) => `<line x1="${xOf(v)}" x2="${xOf(v)}" y1="${T}" y2="${H - B}" class="rank-svg-grid"/>`),
+    ...yt.map((v) => `<line x1="${L}" x2="${W - R}" y1="${yOf(v)}" y2="${yOf(v)}" class="rank-svg-grid"/>`)
+  ].join("");
+  const labels = new Set(["Gemini 3.7 Flash", "Qwen3.8-27B", "InternVL3.5-38B", "RoboBrain2.0-32B", "Qwen3.6-27B"]);
+  const dots = data.rows.map((row) => {
+    const cx = xOf(row.bench);
+    const cy = yOf(row.g1);
+    const label = labels.has(row.name)
+      ? `<text x="${cx + 8}" y="${cy - 8}" class="rank-svg-label">${escXml(row.short)}</text>`
+      : "";
+    return `<g>
+      <circle cx="${cx}" cy="${cy}" r="5.4" fill="${RANK_CAT[row.category].fill}" stroke="#fff" stroke-width="1.5">
+        <title>${escXml(row.name)} · Bench ${row.bench.toFixed(1)} · G1 ${row.g1.toFixed(1)}</title>
+      </circle>
+      ${label}
+    </g>`;
+  }).join("");
+  return `<svg class="rank-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Scatter of SIGN-Bench gated accuracy versus G1 accuracy">
+    ${grid}
+    <path d="${bandPath}" fill="rgba(37,99,235,0.10)"/>
+    <line x1="${xOf(x0)}" y1="${yOf(y0)}" x2="${xOf(x1)}" y2="${yOf(y1)}" class="rank-svg-fit"/>
+    ${dots}
+    ${xt.map((v) => `<text x="${xOf(v)}" y="${H - 18}" class="rank-svg-tick" text-anchor="middle">${v}</text>`).join("")}
+    ${yt.map((v) => `<text x="${L - 8}" y="${yOf(v) + 4}" class="rank-svg-tick" text-anchor="end">${v}</text>`).join("")}
+    <text x="${(L + W - R) / 2}" y="${H - 4}" class="rank-svg-axis" text-anchor="middle">SIGN-Bench gated Acc.</text>
+    <text x="14" y="${(T + H - B) / 2}" class="rank-svg-axis" text-anchor="middle" transform="rotate(-90 14 ${(T + H - B) / 2})">G1 Acc.</text>
+    <g transform="translate(${L},10)">${svgLegend()}</g>
+    <text x="${W - R}" y="22" class="rank-svg-stat" text-anchor="end">ρₛ = ${data.spearman.toFixed(3)}  ·  τ = ${data.kendall.toFixed(3)}</text>
+  </svg>`;
+}
+
+function chartRankRank(data) {
+  const n = data.n;
+  const W = 760;
+  const H = 430;
+  const L = 52;
+  const R = 18;
+  const T = 36;
+  const B = 48;
+  const xOf = (r) => L + ((r - 1) / (n - 1)) * (W - L - R);
+  const yOf = (r) => T + ((r - 1) / (n - 1)) * (H - T - B);
+  const ticks = [1, 5, 10, 15, 22].filter((v) => v <= n);
+  const grid = ticks.map((v) => `
+    <line x1="${xOf(v)}" x2="${xOf(v)}" y1="${T}" y2="${H - B}" class="rank-svg-grid"/>
+    <line x1="${L}" x2="${W - R}" y1="${yOf(v)}" y2="${yOf(v)}" class="rank-svg-grid"/>
+  `).join("");
+  const labels = new Set(["Gemini 3.7 Flash", "Qwen3.8-27B", "InternVL3.5-38B", "RoboBrain2.0-32B"]);
+  const dots = data.rows.map((row) => {
+    const cx = xOf(row.benchRank);
+    const cy = yOf(row.g1Rank);
+    const label = labels.has(row.name)
+      ? `<text x="${cx + 8}" y="${cy - 7}" class="rank-svg-label">${escXml(row.short)}</text>`
+      : "";
+    return `<g>
+      <circle cx="${cx}" cy="${cy}" r="5.4" fill="${RANK_CAT[row.category].fill}" stroke="#fff" stroke-width="1.5">
+        <title>${escXml(row.name)} · Bench rank ${row.benchRank} · G1 rank ${row.g1Rank}</title>
+      </circle>
+      ${label}
+    </g>`;
+  }).join("");
+  return `<svg class="rank-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Rank-rank scatter of SIGN-Bench versus G1">
+    ${grid}
+    <line x1="${xOf(1)}" y1="${yOf(1)}" x2="${xOf(n)}" y2="${yOf(n)}" class="rank-svg-identity"/>
+    ${dots}
+    ${ticks.map((v) => `<text x="${xOf(v)}" y="${H - 18}" class="rank-svg-tick" text-anchor="middle">${v}</text>`).join("")}
+    ${ticks.map((v) => `<text x="${L - 8}" y="${yOf(v) + 4}" class="rank-svg-tick" text-anchor="end">${v}</text>`).join("")}
+    <text x="${(L + W - R) / 2}" y="${H - 4}" class="rank-svg-axis" text-anchor="middle">SIGN-Bench rank (1 = best)</text>
+    <text x="14" y="${(T + H - B) / 2}" class="rank-svg-axis" text-anchor="middle" transform="rotate(-90 14 ${(T + H - B) / 2})">G1 rank (1 = best)</text>
+    <g transform="translate(${L},10)">${svgLegend()}</g>
+    <text x="${W - R}" y="22" class="rank-svg-stat" text-anchor="end">identity = perfect concordance</text>
+  </svg>`;
+}
+
+function chartSlope(data) {
+  const ordered = [...data.rows].sort((a, b) => a.benchRank - b.benchRank);
+  const W = 760;
+  const H = 540;
+  const L = 138;
+  const R = 138;
+  const T = 36;
+  const B = 28;
+  const yOf = (rank) => T + ((rank - 1) / (data.n - 1)) * (H - T - B);
+  const lines = ordered.map((row) => {
+    const y1 = yOf(row.benchRank);
+    const y2 = yOf(row.g1Rank);
+    const delta = Math.abs(row.benchRank - row.g1Rank);
+    const op = Math.max(0.22, 0.92 - delta / 18);
+    return `<g>
+      <line x1="${L}" y1="${y1}" x2="${W - R}" y2="${y2}" stroke="${RANK_CAT[row.category].fill}" stroke-width="${delta < 3 ? 2.2 : 1.25}" stroke-opacity="${op}">
+        <title>${escXml(row.name)}</title>
+      </line>
+      <circle cx="${L}" cy="${y1}" r="3.4" fill="${RANK_CAT[row.category].fill}"/>
+      <circle cx="${W - R}" cy="${y2}" r="3.4" fill="${RANK_CAT[row.category].fill}"/>
+      <text x="${L - 10}" y="${y1 + 4}" class="rank-svg-side" text-anchor="end">${escXml(row.short)}</text>
+      <text x="${W - R + 10}" y="${y2 + 4}" class="rank-svg-side">${escXml(row.short)}</text>
+    </g>`;
+  }).join("");
+  return `<svg class="rank-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Slopegraph of ranks from SIGN-Bench to G1">
+    <text x="${L}" y="18" class="rank-svg-axis" text-anchor="middle">SIGN-Bench</text>
+    <text x="${W - R}" y="18" class="rank-svg-axis" text-anchor="middle">G1 robot</text>
+    ${lines}
+    <g transform="translate(${(W / 2) - 140},${H - 14})">${svgLegend()}</g>
+  </svg>`;
+}
+
+function chartBlandAltman(data) {
+  const deltas = data.rows.map((row) => row.benchRank - row.g1Rank);
+  const means = data.rows.map((row) => (row.benchRank + row.g1Rank) / 2);
+  const m = mean(deltas);
+  const s = stdev(deltas);
+  const lo = m - 1.96 * s;
+  const hi = m + 1.96 * s;
+  const W = 760;
+  const H = 430;
+  const L = 52;
+  const R = 18;
+  const T = 36;
+  const B = 48;
+  const xmin = 1;
+  const xmax = data.n;
+  const ymin = Math.min(-12, lo - 1.5);
+  const ymax = Math.max(12, hi + 1.5);
+  const xOf = (v) => L + ((v - xmin) / (xmax - xmin)) * (W - L - R);
+  const yOf = (v) => T + (1 - (v - ymin) / (ymax - ymin)) * (H - T - B);
+  const xt = niceTicks(xmin, xmax, 6);
+  const yt = niceTicks(ymin, ymax, 7);
+  const grid = [
+    ...xt.map((v) => `<line x1="${xOf(v)}" x2="${xOf(v)}" y1="${T}" y2="${H - B}" class="rank-svg-grid"/>`),
+    ...yt.map((v) => `<line x1="${L}" x2="${W - R}" y1="${yOf(v)}" y2="${yOf(v)}" class="rank-svg-grid"/>`)
+  ].join("");
+  const dots = data.rows.map((row, i) => `<circle cx="${xOf(means[i])}" cy="${yOf(deltas[i])}" r="5.4" fill="${RANK_CAT[row.category].fill}" stroke="#fff" stroke-width="1.5">
+    <title>${escXml(row.name)} · Δrank ${deltas[i].toFixed(1)}</title>
+  </circle>`).join("");
+  return `<svg class="rank-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Bland-Altman plot of paired ranks">
+    ${grid}
+    <line x1="${L}" x2="${W - R}" y1="${yOf(0)}" y2="${yOf(0)}" class="rank-svg-identity"/>
+    <line x1="${L}" x2="${W - R}" y1="${yOf(m)}" y2="${yOf(m)}" class="rank-svg-fit"/>
+    <line x1="${L}" x2="${W - R}" y1="${yOf(lo)}" y2="${yOf(lo)}" class="rank-svg-limit"/>
+    <line x1="${L}" x2="${W - R}" y1="${yOf(hi)}" y2="${yOf(hi)}" class="rank-svg-limit"/>
+    ${dots}
+    ${xt.map((v) => `<text x="${xOf(v)}" y="${H - 18}" class="rank-svg-tick" text-anchor="middle">${v}</text>`).join("")}
+    ${yt.map((v) => `<text x="${L - 8}" y="${yOf(v) + 4}" class="rank-svg-tick" text-anchor="end">${v}</text>`).join("")}
+    <text x="${(L + W - R) / 2}" y="${H - 4}" class="rank-svg-axis" text-anchor="middle">Mean rank (SIGN-Bench, G1)</text>
+    <text x="14" y="${(T + H - B) / 2}" class="rank-svg-axis" text-anchor="middle" transform="rotate(-90 14 ${(T + H - B) / 2})">Rank Δ (Bench − G1)</text>
+    <g transform="translate(${L},10)">${svgLegend()}</g>
+    <text x="${W - R}" y="22" class="rank-svg-stat" text-anchor="end">mean Δ = ${m.toFixed(2)}  ·  ±1.96 SD</text>
+  </svg>`;
+}
+
+function chartTopK(data) {
+  const n = data.n;
+  const benchOrder = [...data.rows].sort((a, b) => a.benchRank - b.benchRank).map((row) => row.name);
+  const g1Order = [...data.rows].sort((a, b) => a.g1Rank - b.g1Rank).map((row) => row.name);
+  const ys = [];
+  for (let k = 1; k <= n; k += 1) {
+    const a = new Set(benchOrder.slice(0, k));
+    const b = g1Order.slice(0, k);
+    ys.push(b.filter((name) => a.has(name)).length / k);
+  }
+  const W = 760;
+  const H = 430;
+  const L = 52;
+  const R = 18;
+  const T = 36;
+  const B = 48;
+  const xOf = (k) => L + ((k - 1) / (n - 1)) * (W - L - R);
+  const yOf = (v) => T + (1 - v) * (H - T - B);
+  const area = [`M ${xOf(1)} ${yOf(0)}`, `L ${xOf(1)} ${yOf(ys[0])}`, ...ys.map((v, i) => `L ${xOf(i + 1)} ${yOf(v)}`), `L ${xOf(n)} ${yOf(0)}`, "Z"].join(" ");
+  const chance = [`M ${xOf(1)} ${yOf(1 / n)}`, ...ys.map((_, i) => `L ${xOf(i + 1)} ${yOf((i + 1) / n)}`)].join(" ");
+  const line = [`M ${xOf(1)} ${yOf(ys[0])}`, ...ys.map((v, i) => `L ${xOf(i + 1)} ${yOf(v)}`)].join(" ");
+  const xt = [1, 5, 10, 15, 22].filter((v) => v <= n);
+  const yt = [0, 0.25, 0.5, 0.75, 1];
+  return `<svg class="rank-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Top-k overlap between SIGN-Bench and G1 rankings">
+    ${xt.map((v) => `<line x1="${xOf(v)}" x2="${xOf(v)}" y1="${T}" y2="${H - B}" class="rank-svg-grid"/>`).join("")}
+    ${yt.map((v) => `<line x1="${L}" x2="${W - R}" y1="${yOf(v)}" y2="${yOf(v)}" class="rank-svg-grid"/>`).join("")}
+    <path d="${area}" fill="rgba(37,99,235,0.12)"/>
+    <path d="${chance}" class="rank-svg-limit" fill="none"/>
+    <path d="${line}" class="rank-svg-fit" fill="none"/>
+    ${xt.map((v) => `<text x="${xOf(v)}" y="${H - 18}" class="rank-svg-tick" text-anchor="middle">${v}</text>`).join("")}
+    ${yt.map((v) => `<text x="${L - 8}" y="${yOf(v) + 4}" class="rank-svg-tick" text-anchor="end">${v}</text>`).join("")}
+    <text x="${(L + W - R) / 2}" y="${H - 4}" class="rank-svg-axis" text-anchor="middle">Top-k models</text>
+    <text x="14" y="${(T + H - B) / 2}" class="rank-svg-axis" text-anchor="middle" transform="rotate(-90 14 ${(T + H - B) / 2})">Overlap / k</text>
+    <text x="${L + 8}" y="${T + 14}" class="rank-svg-legend">observed</text>
+    <text x="${L + 8}" y="${T + 30}" class="rank-svg-legend" fill="#94a3b8">chance (k / n)</text>
+    <text x="${W - R}" y="22" class="rank-svg-stat" text-anchor="end">top-5 overlap = ${(ys[4] * 100).toFixed(0)}%</text>
+  </svg>`;
+}
+
+function formatRho(value) {
+  return value.toFixed(3);
+}
+
+function renderRankGallery() {
+  const track = document.getElementById("rank-gallery-track");
+  const dots = document.getElementById("rank-gallery-dots");
+  const lead = document.getElementById("rank-gallery-lead");
+  const hero = document.getElementById("hero-rho");
+  if (!track) return;
+  const data = rankBundle();
+  if (hero) hero.textContent = `ρ = ${formatRho(data.spearman)}`;
+  if (lead) {
+    lead.innerHTML = `Paired ranks for $n=${data.n}$ models (API-fail Qwen-Max / GLM omitted). Spearman $\\rho_s=${formatRho(data.spearman)}$ vs. overall gated Acc.; $\\rho_s=${formatRho(data.spearmanHr)}$ vs. the human–robot subset. Kendall $\\tau=${formatRho(data.kendall)}$. Swipe to compare five views; one will be kept.`;
+  }
+  const slides = [
+    {
+      kicker: "01 / 05",
+      title: "Score scatter",
+      copy: "G1 Acc. against SIGN-Bench gated Acc., with an OLS fit and 95% mean band. Tight clustering along the line is score-level transfer.",
+      svg: chartScatter(data)
+    },
+    {
+      kicker: "02 / 05",
+      title: "Rank–rank identity",
+      copy: "Each point is a model’s rank on both boards (1 = best). The diagonal is perfect concordance; Spearman is the correlation of these ranks.",
+      svg: chartRankRank(data)
+    },
+    {
+      kicker: "03 / 05",
+      title: "Slopegraph",
+      copy: "Left: SIGN-Bench rank. Right: G1 rank. Parallel trajectories preserve order; crossings are the models that move.",
+      svg: chartSlope(data)
+    },
+    {
+      kicker: "04 / 05",
+      title: "Bland–Altman of ranks",
+      copy: "Mean rank versus rank difference. The ink line is zero difference; dashed lines are ±1.96 SD. Agreement concentrates around zero.",
+      svg: chartBlandAltman(data)
+    },
+    {
+      kicker: "05 / 05",
+      title: "Top-k overlap",
+      copy: "Share of models that appear in both top-k lists. The dashed baseline is chance ($k/n$). Elevation above chance is head-of-ranking agreement.",
+      svg: chartTopK(data)
+    }
+  ];
+  track.innerHTML = slides.map((slide, i) => `<article class="rank-slide" data-idx="${i}">
+    <header class="rank-slide-head">
+      <span class="rank-slide-kicker">${slide.kicker}</span>
+      <h4>${slide.title}</h4>
+      <p>${slide.copy}</p>
+    </header>
+    <div class="rank-slide-chart">${slide.svg}</div>
+  </article>`).join("");
+  dots.innerHTML = slides.map((slide, i) => `<button type="button" class="rank-dot${i === 0 ? " active" : ""}" data-idx="${i}" aria-label="${slide.title}">${String(i + 1).padStart(2, "0")}</button>`).join("");
+}
+
+function setupRankGallery() {
+  const viewport = document.getElementById("rank-gallery-viewport");
+  const track = document.getElementById("rank-gallery-track");
+  const dots = document.getElementById("rank-gallery-dots");
+  const prev = document.getElementById("rank-gallery-prev");
+  const next = document.getElementById("rank-gallery-next");
+  if (!viewport || !track) return;
+  const slides = () => [...track.querySelectorAll(".rank-slide")];
+  const sizeSlides = () => {
+    const width = viewport.clientWidth;
+    slides().forEach((slide) => {
+      slide.style.flexBasis = `${width}px`;
+      slide.style.width = `${width}px`;
+      slide.style.minWidth = `${width}px`;
+      slide.style.maxWidth = `${width}px`;
+    });
+  };
+  const go = (idx) => {
+    const list = slides();
+    const n = list.length;
+    if (!n) return;
+    const clamped = ((idx % n) + n) % n;
+    viewport.scrollTo({ left: clamped * viewport.clientWidth, behavior: "smooth" });
+    dots.querySelectorAll(".rank-dot").forEach((dot, i) => dot.classList.toggle("active", i === clamped));
+  };
+  const current = () => {
+    const w = viewport.clientWidth || 1;
+    return Math.max(0, Math.min(slides().length - 1, Math.round(viewport.scrollLeft / w)));
+  };
+  prev?.addEventListener("click", () => go(current() - 1));
+  next?.addEventListener("click", () => go(current() + 1));
+  dots?.addEventListener("click", (event) => {
+    const btn = event.target.closest(".rank-dot");
+    if (!btn) return;
+    go(Number(btn.dataset.idx));
+  });
+  viewport.addEventListener("scroll", () => {
+    const idx = current();
+    dots.querySelectorAll(".rank-dot").forEach((dot, i) => dot.classList.toggle("active", i === idx));
+  }, { passive: true });
+  sizeSlides();
+  window.addEventListener("resize", () => {
+    const idx = current();
+    sizeSlides();
+    viewport.scrollTo({ left: idx * viewport.clientWidth });
+  });
+}
+
+// ==============================================================================
+// 7. Initialization
 // ==============================================================================
 function setupG1Lightbox() {
   const lightbox = document.getElementById("g1-lightbox");
@@ -993,6 +1613,9 @@ document.addEventListener("DOMContentLoaded", () => {
   renderLeaderboard();
   setupLeaderboardEvents();
   renderCapabilityHeatmaps();
+  renderG1Table();
+  renderRankGallery();
+  setupRankGallery();
   renderCarousel();
   setupCarouselEvents();
   setupG1Lightbox();

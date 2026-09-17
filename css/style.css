@@ -273,9 +273,9 @@ body {
 /* Highlight Stat Cards */
 .hero-stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.25rem;
-  max-width: 1040px;
+  max-width: 920px;
   margin: 0 auto;
 }
 
@@ -308,6 +308,14 @@ body {
   font-size: 0.85rem;
   color: var(--slate-500);
   font-weight: 500;
+}
+
+.stat-sub {
+  margin-top: 0.28rem;
+  font-size: 0.78rem;
+  color: var(--slate-400);
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 /* Sections Common */
@@ -876,7 +884,7 @@ section {
   width: 148px;
   height: 10px;
   border-radius: 999px;
-  background: linear-gradient(90deg, #ecfccb 0%, #99f6e4 28%, #22d3ee 52%, #2563eb 78%, #1e3a8a 100%);
+  background: linear-gradient(90deg, #f6f4ef 0%, #dcd6ca 18%, #b0becc 38%, #7a94b2 58%, #244a84 82%, #0e204a 100%);
   box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.08);
 }
 
@@ -966,6 +974,7 @@ section {
   padding: 0.52rem 0.12rem;
   font-weight: 700;
   font-size: 0.84rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
 }
 
 .heatmap-row-avg .heatmap-model-inner {
@@ -1464,6 +1473,241 @@ section {
   font-size: 0.86rem;
   line-height: 1.5;
   color: var(--slate-500);
+}
+
+.g1-results-block {
+  margin: 0 0 2.4rem;
+}
+
+.g1-table {
+  font-size: 0.92rem;
+}
+
+.g1-table th,
+.g1-table td {
+  padding: 0.68rem 0.62rem;
+}
+
+.g1-table th {
+  white-space: normal;
+  line-height: 1.3;
+}
+
+.g1-group-row td {
+  text-align: left;
+  font-weight: 800;
+  font-size: 0.74rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #475569;
+  background: #f8fafc;
+}
+
+.g1-na {
+  color: #94a3b8;
+}
+
+.g1-row-fail td {
+  opacity: 0.55;
+}
+
+.g1-table .heatmap-model-inner {
+  font-size: 0.88rem;
+}
+
+.g1-table .heatmap-model {
+  padding: 0.68rem 0.62rem !important;
+}
+
+.g1-table-note {
+  margin-top: 0.75rem;
+}
+
+.rank-gallery-block {
+  margin: 0 0 2.75rem;
+  scroll-margin-top: 5rem;
+}
+
+.rank-gallery {
+  position: relative;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) 42px;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.rank-gallery-viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-lg);
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
+  scrollbar-width: none;
+}
+
+.rank-gallery-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.rank-gallery-track {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.rank-slide {
+  flex: 0 0 auto;
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  scroll-snap-align: start;
+  padding: 1.15rem 1.2rem 0.85rem;
+  box-sizing: border-box;
+}
+
+.rank-slide-kicker {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.rank-slide-head h4 {
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: var(--dark);
+  letter-spacing: -0.02em;
+  margin: 0.12rem 0 0.35rem;
+}
+
+.rank-slide-head p {
+  color: var(--slate-500);
+  font-size: 0.88rem;
+  max-width: 48rem;
+  line-height: 1.5;
+  margin: 0 0 0.55rem;
+}
+
+.rank-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  font-family: var(--font-sans);
+}
+
+.rank-svg-grid {
+  stroke: #e8eef5;
+  stroke-width: 1;
+}
+
+.rank-svg-fit {
+  stroke: #1d4ed8;
+  stroke-width: 1.7;
+  fill: none;
+}
+
+.rank-svg-identity {
+  stroke: #94a3b8;
+  stroke-width: 1.2;
+  stroke-dasharray: 5 4;
+  fill: none;
+}
+
+.rank-svg-limit {
+  stroke: #94a3b8;
+  stroke-width: 1.05;
+  stroke-dasharray: 3 4;
+  fill: none;
+}
+
+.rank-svg-tick {
+  fill: #64748b;
+  font-size: 11px;
+}
+
+.rank-svg-axis {
+  fill: #475569;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.rank-svg-label {
+  fill: #0f172a;
+  font-size: 10.5px;
+  font-weight: 650;
+}
+
+.rank-svg-side {
+  fill: #334155;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.rank-svg-legend {
+  fill: #64748b;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.rank-svg-stat {
+  fill: #1e3a5f;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.rank-gallery-btn {
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--slate-200);
+  background: var(--white);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  color: var(--slate-700);
+  font-size: 1.05rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.rank-gallery-btn:hover {
+  border-color: var(--primary-border);
+  color: var(--primary);
+}
+
+.rank-gallery-dots {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.9rem;
+}
+
+.rank-dot {
+  border: 1px solid var(--slate-200);
+  background: var(--white);
+  color: var(--slate-500);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 0.28rem 0.55rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+}
+
+.rank-dot.active {
+  background: var(--dark);
+  color: #fff;
+  border-color: var(--dark);
+}
+
+@media (max-width: 720px) {
+  .rank-gallery {
+    grid-template-columns: 1fr;
+  }
+  .rank-gallery-btn {
+    display: none;
+  }
 }
 
 /* Dual-view G1 interaction gallery */

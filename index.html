@@ -10,7 +10,7 @@
   <meta name="keywords" content="SIGN-Bench, VLM, Human-Robot Interaction, Embodied AI, Social Benchmark, Person Localization">
   
   <!-- Local styles only; keep off-site URLs out of markup -->
-  <link rel="stylesheet" href="css/style.css?v=8">
+  <link rel="stylesheet" href="css/style.css?v=11">
   <link rel="stylesheet" href="vendor/katex/katex.min.css?v=3">
 </head>
 <body>
@@ -86,18 +86,15 @@
       <div class="hero-stats">
         <div class="stat-card">
           <div class="stat-number">2,010</div>
-          <div class="stat-label">VQA Questions (50% H-H / 50% H-R)</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">$\mathrm{IoU} \ge 0.5$</div>
-          <div class="stat-label">Strict Two-Stage Localization Gate</div>
+          <div class="stat-label">VQA Questions</div>
+          <div class="stat-sub">50% Human–Human · 50% Human–Robot</div>
         </div>
         <div class="stat-card">
           <div class="stat-number">26</div>
           <div class="stat-label">Evaluated State-of-the-art VLMs</div>
         </div>
         <div class="stat-card">
-          <div class="stat-number">$\rho = 0.782$</div>
+          <div class="stat-number" id="hero-rho">$\rho = 0.782$</div>
           <div class="stat-label">Strong Correlation with Real Robot G1</div>
         </div>
       </div>
@@ -225,7 +222,7 @@
           <span class="section-tag">Capability Breakdown</span>
           <h3 class="heatmap-heading">Per-Capability Scores</h3>
           <p class="heatmap-legend-copy">
-            Each cell is the score on one capability. Color follows a sequential scale from low (pale yellow-green) to high (deep blue).
+            Each cell is the score on one capability. Color follows a sequential ink scale from warm paper (low) to navy (high).
           </p>
           <div class="heatmap-scale" aria-hidden="true">
             <span>Low</span>
@@ -301,17 +298,33 @@
         </p>
       </div>
 
-      <div class="correlation-wrap">
-        <div class="correlation-card">
-          <span class="correlation-val">$\rho = 0.782$</span>
-          <span class="correlation-split">overall</span>
-          <span style="color: var(--slate-300);">|</span>
-          <span class="correlation-val" style="color: var(--indigo);">$\rho = 0.725$</span>
-          <span class="correlation-split">human–robot subset</span>
+      <div class="g1-results-block">
+        <div class="heatmap-intro">
+          <span class="section-tag">Hardware Leaderboard</span>
+          <h3 class="heatmap-heading">G1 Human–Robot Results</h3>
+          <p class="heatmap-legend-copy">
+            110 items, all Human–Robot. Acc. is the cascade exact-match rate: Stage-1 pass ($\mathrm{IoU}\ge 0.5$) times Stage-2 set-level Acc; failed localization scores 0. Social Signal Understanding and Social Reasoning are set-level exact match on items that enter that layer. Values $\times 100$. Ranking views exclude API-fail Qwen-Max / GLM-5.3-Flash.
+          </p>
         </div>
-        <p class="correlation-note">
-          Spearman $\rho$ is the rank correlation between SIGN-Bench gated accuracy and G1 hardware gated accuracy. Values near $1$ mean the offline benchmark ranking matches the robot ranking.
-        </p>
+        <div id="g1-table-root"></div>
+      </div>
+
+      <div class="rank-gallery-block">
+        <div class="heatmap-intro">
+          <span class="section-tag">Rank Concordance</span>
+          <h3 class="heatmap-heading">SIGN-Bench vs. G1 Ranking</h3>
+          <p class="heatmap-legend-copy" id="rank-gallery-lead">
+            Five statistical views of the same $n$ paired ranks. Swipe or use the arrows; one view will be kept.
+          </p>
+        </div>
+        <div class="rank-gallery">
+          <button type="button" class="rank-gallery-btn" id="rank-gallery-prev" aria-label="Previous chart">&#10094;</button>
+          <div class="rank-gallery-viewport" id="rank-gallery-viewport">
+            <div class="rank-gallery-track" id="rank-gallery-track"></div>
+          </div>
+          <button type="button" class="rank-gallery-btn" id="rank-gallery-next" aria-label="Next chart">&#10095;</button>
+        </div>
+        <div class="rank-gallery-dots" id="rank-gallery-dots"></div>
       </div>
 
       <!-- Dual-view G1 interaction gallery: 4 trials × (third-person + robot view) -->
@@ -427,6 +440,6 @@
   <!-- Scripts -->
   <script src="vendor/katex/katex.min.js?v=3"></script>
   <script src="vendor/katex/auto-render.min.js?v=3"></script>
-  <script src="js/main.js?v=8"></script>
+  <script src="js/main.js?v=11"></script>
 </body>
 </html>
