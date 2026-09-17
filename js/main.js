@@ -813,9 +813,9 @@ function setupCarouselEvents() {
 // 5. Per-capability heatmaps
 // ==============================================================================
 const HEATMAP_METRICS = [
-  { key: "composition", label: "Cross-level Composition", short: "Composition" },
+  { key: "composition", label: "Cross-level Composition", short: "Comp." },
   { key: "gaze", label: "Gaze", short: "Gaze" },
-  { key: "expression", label: "Expression", short: "Expression" },
+  { key: "expression", label: "Expression", short: "Expr." },
   { key: "gesture", label: "Gesture", short: "Gesture" },
   { key: "touch", label: "Touch", short: "Touch" },
   { key: "attitude", label: "Interpersonal Attitude", short: "Attitude" },

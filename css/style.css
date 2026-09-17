@@ -907,62 +907,65 @@ section {
 
 .heatmap-table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: separate;
-  border-spacing: 4px;
+  border-spacing: 3px;
   font-variant-numeric: tabular-nums;
 }
 
 .heatmap-table th {
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 700;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
   color: var(--slate-500);
   text-align: center;
-  padding: 0.35rem 0.3rem 0.5rem;
+  padding: 0.3rem 0.12rem 0.45rem;
   line-height: 1.25;
-  min-width: 4.6rem;
+}
+
+.heatmap-table th.heatmap-model-h,
+.heatmap-model {
+  width: 13.75rem;
+  text-align: left;
+  background: var(--white);
+  position: sticky;
+  left: 0;
+  z-index: 1;
 }
 
 .heatmap-table th.heatmap-model-h {
-  text-align: left;
-  min-width: 16rem;
-  padding-left: 0.35rem;
-}
-
-.heatmap-table th.heatmap-mean-h,
-.heatmap-cell.mean {
-  min-width: 3.6rem;
+  padding-left: 0.3rem;
 }
 
 .heatmap-model {
-  text-align: left;
   white-space: nowrap;
-  padding: 0.2rem 0.55rem 0.2rem 0.2rem !important;
+  padding: 0.15rem 0.4rem 0.15rem 0.15rem !important;
 }
 
 .heatmap-model-inner {
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.45rem;
   font-weight: 650;
   color: var(--dark);
-  font-size: 0.92rem;
+  font-size: 0.82rem;
+  max-width: 100%;
 }
 
 .heatmap-model-inner .org-icon {
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  flex-shrink: 0;
 }
 
 .heatmap-cell {
   text-align: center;
   border-radius: 8px;
-  padding: 0.62rem 0.35rem;
+  padding: 0.52rem 0.12rem;
   font-weight: 700;
-  font-size: 0.92rem;
-  min-width: 4.4rem;
+  font-size: 0.84rem;
 }
 
 .heatmap-row-avg .heatmap-model-inner {
