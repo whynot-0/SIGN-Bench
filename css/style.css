@@ -1777,6 +1777,61 @@ section {
 }
 
 /* Dual-view G1 interaction gallery */
+.g1-category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2.1rem;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.g1-category-header {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.85rem;
+}
+
+.g1-category-title {
+  font-size: 1.18rem;
+  font-weight: 800;
+  color: var(--dark);
+  margin: 0;
+}
+
+.g1-category-meta {
+  color: var(--slate-500);
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+
+.g1-new-badge {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.18rem 0.5rem;
+  border-radius: 9999px;
+}
+
+.g1-examples-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.15rem;
+}
+
+.g1-example-label {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--slate-500);
+}
+
 .g1-trials-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1830,8 +1885,9 @@ section {
 
 .g1-dual-view {
   display: grid;
-  grid-template-columns: 1.28fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 0.55rem;
+  align-items: stretch;
 }
 
 .g1-view {
@@ -1839,6 +1895,7 @@ section {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
+  min-width: 0;
 }
 
 .g1-view-btn {
@@ -1851,19 +1908,16 @@ section {
   overflow: hidden;
   cursor: zoom-in;
   position: relative;
+  aspect-ratio: 4 / 3;
 }
 
 .g1-view-btn img {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  height: 100%;
   object-fit: cover;
-  object-position: center 40%;
+  object-position: center 38%;
   display: block;
   transition: transform 0.35s ease;
-}
-
-.g1-view:first-child .g1-view-btn img {
-  object-position: left center;
 }
 
 .g1-trial-card:hover .g1-view-btn img {
@@ -2067,7 +2121,8 @@ section {
   .sample-card-inner {
     grid-template-columns: 1fr;
   }
-  .g1-trials-grid {
+  .g1-trials-grid,
+  .g1-examples-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -2079,11 +2134,12 @@ section {
   .hero-stats {
     grid-template-columns: 1fr;
   }
-  .g1-trials-grid {
+  .g1-trials-grid,
+  .g1-examples-grid {
     grid-template-columns: 1fr;
   }
   .g1-dual-view {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
   }
   .navbar-nav {
     display: none; /* simple mobile fallback */

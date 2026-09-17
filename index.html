@@ -10,7 +10,7 @@
   <meta name="keywords" content="SIGN-Bench, VLM, Human-Robot Interaction, Embodied AI, Social Benchmark, Person Localization">
   
   <!-- Local styles only; keep off-site URLs out of markup -->
-  <link rel="stylesheet" href="css/style.css?v=20">
+  <link rel="stylesheet" href="css/style.css?v=21">
   <link rel="stylesheet" href="vendor/katex/katex.min.css?v=3">
 </head>
 <body>
@@ -294,7 +294,7 @@
         <span class="section-tag">Embodied Hardware Verification</span>
         <h2 class="section-title">Real-World Robot Validation (Unitree G1)</h2>
         <p class="section-subtitle">
-          We ran 110 real-world samples with 11 participants on Unitree G1. Four example trials are shown below, each with a third-person view and a robot view.
+          We ran 110 real-world samples with 11 participants on Unitree G1. Five gesture classes are shown below, each with two examples pairing a third-person view and a matched robot (first-person) view.
         </p>
       </div>
 
@@ -316,92 +316,229 @@
         <div class="rank-gallery-dots" id="rank-gallery-dots"></div>
       </div>
 
-      <!-- Dual-view G1 interaction gallery: 4 trials × (third-person + robot view) -->
-      <div class="g1-trials-grid">
+      <!-- Dual-view G1 gallery: 5 classes × 2 examples × (third-person + robot view) -->
+      <div class="g1-category-list">
 
-        <article class="g1-trial-card">
-          <header class="g1-trial-header">
+        <section class="g1-category">
+          <header class="g1-category-header">
             <span class="g1-trial-index">01</span>
-            <h4 class="g1-trial-title">Wave</h4>
+            <h3 class="g1-category-title">Wave</h3>
+            <span class="g1-category-meta">2 examples</span>
           </header>
-          <div class="g1-dual-view">
-            <figure class="g1-view">
-              <button class="g1-view-btn" data-full="images/realworld/trial01_third.jpg" aria-label="Enlarge third-person view">
-                <img src="images/realworld/trial01_third.jpg" alt="Wave, third-person">
-              </button>
-              <figcaption><span class="view-dot third"></span>Third-person</figcaption>
-            </figure>
-            <figure class="g1-view">
-              <button class="g1-view-btn" data-full="images/realworld/trial01_ego.jpg" aria-label="Enlarge robot view">
-                <img src="images/realworld/trial01_ego.jpg" alt="Wave, robot view">
-              </button>
-              <figcaption><span class="view-dot ego"></span>Robot view</figcaption>
-            </figure>
+          <div class="g1-examples-grid">
+            <article class="g1-trial-card">
+              <p class="g1-example-label">Example 1</p>
+              <div class="g1-dual-view">
+                <figure class="g1-view">
+                  <button class="g1-view-btn" data-full="images/realworld/trial01_third.jpg" aria-label="Enlarge Wave example 1 third-person view">
+                    <img src="images/realworld/trial01_third.jpg" alt="Wave example 1, third-person">
+                  </button>
+                  <figcaption><span class="view-dot third"></span>Third-person</figcaption>
+                </figure>
+                <figure class="g1-view">
+                  <button class="g1-view-btn" data-full="images/realworld/trial01_ego.jpg" aria-label="Enlarge Wave example 1 robot view">
+                    <img src="images/realworld/trial01_ego.jpg" alt="Wave example 1, robot view">
+                  </button>
+                  <figcaption><span class="view-dot ego"></span>First-person</figcaption>
+                </figure>
+              </div>
+            </article>
+            <article class="g1-trial-card">
+              <p class="g1-example-label">Example 2</p>
+              <div class="g1-dual-view">
+                <figure class="g1-view">
+                  <button class="g1-view-btn" data-full="images/realworld/wave_2_third.jpg" aria-label="Enlarge Wave example 2 third-person view">
+                    <img src="images/realworld/wave_2_third.jpg" alt="Wave example 2, third-person">
+                  </button>
+                  <figcaption><span class="view-dot third"></span>Third-person</figcaption>
+                </figure>
+                <figure class="g1-view">
+                  <button class="g1-view-btn" data-full="images/realworld/wave_2_ego.jpg" aria-label="Enlarge Wave example 2 robot view">
+                    <img src="images/realworld/wave_2_ego.jpg" alt="Wave example 2, robot view">
+                  </button>
+                  <figcaption><span class="view-dot ego"></span>First-person</figcaption>
+                </figure>
+              </div>
+            </article>
           </div>
-        </article>
+        </section>
 
-        <article class="g1-trial-card">
-          <header class="g1-trial-header">
+        <section class="g1-category">
+          <header class="g1-category-header">
             <span class="g1-trial-index">02</span>
-            <h4 class="g1-trial-title">Point</h4>
+            <h3 class="g1-category-title">Point</h3>
+            <span class="g1-category-meta">2 examples</span>
           </header>
-          <div class="g1-dual-view">
-            <figure class="g1-view">
-              <button class="g1-view-btn" data-full="images/realworld/trial02_third.jpg" aria-label="Enlarge third-person view">
-                <img src="images/realworld/trial02_third.jpg" alt="Point, third-person">
-              </button>
-              <figcaption><span class="view-dot third"></span>Third-person</figcaption>
-            </figure>
-            <figure class="g1-view">
-              <button class="g1-view-btn" data-full="images/realworld/trial02_ego.jpg" aria-label="Enlarge robot view">
-                <img src="images/realworld/trial02_ego.jpg" alt="Point, robot view">
-              </button>
-              <figcaption><span class="view-dot ego"></span>Robot view</figcaption>
-            </figure>
+          <div class="g1-examples-grid">
+            <article class="g1-trial-card">
+              <p class="g1-example-label">Example 1</p>
+              <div class="g1-dual-view">
+                <figure class="g1-view">
+                  <button class="g1-view-btn" data-full="images/realworld/trial02_third.jpg" aria-label="Enlarge Point example 1 third-person view">
+                    <img src="images/realworld/trial02_third.jpg" alt="Point example 1, third-person">
+                  </button>
+                  <figcaption><span class="view-dot third"></span>Third-person</figcaption>
+                </figure>
+                <figure class="g1-view">
+                  <button class="g1-view-btn" data-full="images/realworld/trial02_ego.jpg" aria-label="Enlarge Point example 1 robot view">
+                    <img src="images/realworld/trial02_ego.jpg" alt="Point example 1, robot view">
+                  </button>
+                  <figcaption><span class="view-dot ego"></span>First-person</figcaption>
+                </figure>
+              </div>
+            </article>
+            <article class="g1-trial-card">
+              <p class="g1-example-label">Example 2</p>
+              <div class="g1-dual-view">
+                <figure class="g1-view">
+                  <button class="g1-view-btn" data-full="images/realworld/point_2_third.jpg" aria-label="Enlarge Point example 2 third-person view">
+                    <img src="images/realworld/point_2_third.jpg" alt="Point example 2, third-person">
+                  </button>
+                  <figcaption><span class="view-dot third"></span>Third-person</figcaption>
+                </figure>
+                <figure class="g1-view">
+                  <button class="g1-view-btn" data-full="images/realworld/point_2_ego.jpg" aria-label="Enlarge Point example 2 robot view">
+                    <img src="images/realworld/point_2_ego.jpg" alt="Point example 2, robot view">
+                  </button>
+                  <figcaption><span class="view-dot ego"></span>First-person</figcaption>
+                </figure>
+              </div>
+            </article>
           </div>
-        </article>
+        </section>
 
-        <article class="g1-trial-card">
-          <header class="g1-trial-header">
+        <section class="g1-category">
+          <header class="g1-category-header">
             <span class="g1-trial-index">03</span>
-            <h4 class="g1-trial-title">Handshake</h4>
+            <h3 class="g1-category-title">Handshake</h3>
+            <span class="g1-category-meta">2 examples</span>
           </header>
-          <div class="g1-dual-view">
-            <figure class="g1-view">
-              <button class="g1-view-btn" data-full="images/realworld/trial03_third.jpg" aria-label="Enlarge third-person view">
-                <img src="images/realworld/trial03_third.jpg" alt="Handshake, third-person">
-              </button>
-              <figcaption><span class="view-dot third"></span>Third-person</figcaption>
-            </figure>
-            <figure class="g1-view">
-              <button class="g1-view-btn" data-full="images/realworld/trial03_ego.jpg" aria-label="Enlarge robot view">
-                <img src="images/realworld/trial03_ego.jpg" alt="Handshake, robot view">
-              </button>
-              <figcaption><span class="view-dot ego"></span>Robot view</figcaption>
-            </figure>
+          <div class="g1-examples-grid">
+            <article class="g1-trial-card">
+              <p class="g1-example-label">Example 1</p>
+              <div class="g1-dual-view">
+                <figure class="g1-view">
+                  <button class="g1-view-btn" data-full="images/realworld/trial03_third.jpg" aria-label="Enlarge Handshake example 1 third-person view">
+                    <img src="images/realworld/trial03_third.jpg" alt="Handshake example 1, third-person">
+                  </button>
+                  <figcaption><span class="view-dot third"></span>Third-person</figcaption>
+                </figure>
+                <figure class="g1-view">
+                  <button class="g1-view-btn" data-full="images/realworld/trial03_ego.jpg" aria-label="Enlarge Handshake example 1 robot view">
+                    <img src="images/realworld/trial03_ego.jpg" alt="Handshake example 1, robot view">
+                  </button>
+                  <figcaption><span class="view-dot ego"></span>First-person</figcaption>
+                </figure>
+              </div>
+            </article>
+            <article class="g1-trial-card">
+              <p class="g1-example-label">Example 2</p>
+              <div class="g1-dual-view">
+                <figure class="g1-view">
+                  <button class="g1-view-btn" data-full="images/realworld/handshake_2_third.jpg" aria-label="Enlarge Handshake example 2 third-person view">
+                    <img src="images/realworld/handshake_2_third.jpg" alt="Handshake example 2, third-person">
+                  </button>
+                  <figcaption><span class="view-dot third"></span>Third-person</figcaption>
+                </figure>
+                <figure class="g1-view">
+                  <button class="g1-view-btn" data-full="images/realworld/handshake_2_ego.jpg" aria-label="Enlarge Handshake example 2 robot view">
+                    <img src="images/realworld/handshake_2_ego.jpg" alt="Handshake example 2, robot view">
+                  </button>
+                  <figcaption><span class="view-dot ego"></span>First-person</figcaption>
+                </figure>
+              </div>
+            </article>
           </div>
-        </article>
+        </section>
 
-        <article class="g1-trial-card">
-          <header class="g1-trial-header">
+        <section class="g1-category">
+          <header class="g1-category-header">
             <span class="g1-trial-index">04</span>
-            <h4 class="g1-trial-title">Throw</h4>
+            <h3 class="g1-category-title">Throw</h3>
+            <span class="g1-category-meta">2 examples</span>
           </header>
-          <div class="g1-dual-view">
-            <figure class="g1-view">
-              <button class="g1-view-btn" data-full="images/realworld/trial04_third.jpg" aria-label="Enlarge third-person view">
-                <img src="images/realworld/trial04_third.jpg" alt="Throw, third-person">
-              </button>
-              <figcaption><span class="view-dot third"></span>Third-person</figcaption>
-            </figure>
-            <figure class="g1-view">
-              <button class="g1-view-btn" data-full="images/realworld/trial04_ego.jpg" aria-label="Enlarge robot view">
-                <img src="images/realworld/trial04_ego.jpg" alt="Throw, robot view">
-              </button>
-              <figcaption><span class="view-dot ego"></span>Robot view</figcaption>
-            </figure>
+          <div class="g1-examples-grid">
+            <article class="g1-trial-card">
+              <p class="g1-example-label">Example 1</p>
+              <div class="g1-dual-view">
+                <figure class="g1-view">
+                  <button class="g1-view-btn" data-full="images/realworld/trial04_third.jpg" aria-label="Enlarge Throw example 1 third-person view">
+                    <img src="images/realworld/trial04_third.jpg" alt="Throw example 1, third-person">
+                  </button>
+                  <figcaption><span class="view-dot third"></span>Third-person</figcaption>
+                </figure>
+                <figure class="g1-view">
+                  <button class="g1-view-btn" data-full="images/realworld/trial04_ego.jpg" aria-label="Enlarge Throw example 1 robot view">
+                    <img src="images/realworld/trial04_ego.jpg" alt="Throw example 1, robot view">
+                  </button>
+                  <figcaption><span class="view-dot ego"></span>First-person</figcaption>
+                </figure>
+              </div>
+            </article>
+            <article class="g1-trial-card">
+              <p class="g1-example-label">Example 2</p>
+              <div class="g1-dual-view">
+                <figure class="g1-view">
+                  <button class="g1-view-btn" data-full="images/realworld/throw_2_third.jpg" aria-label="Enlarge Throw example 2 third-person view">
+                    <img src="images/realworld/throw_2_third.jpg" alt="Throw example 2, third-person">
+                  </button>
+                  <figcaption><span class="view-dot third"></span>Third-person</figcaption>
+                </figure>
+                <figure class="g1-view">
+                  <button class="g1-view-btn" data-full="images/realworld/throw_2_ego.jpg" aria-label="Enlarge Throw example 2 robot view">
+                    <img src="images/realworld/throw_2_ego.jpg" alt="Throw example 2, robot view">
+                  </button>
+                  <figcaption><span class="view-dot ego"></span>First-person</figcaption>
+                </figure>
+              </div>
+            </article>
           </div>
-        </article>
+        </section>
+
+        <section class="g1-category">
+          <header class="g1-category-header">
+            <span class="g1-trial-index">05</span>
+            <h3 class="g1-category-title">Hug</h3>
+            <span class="g1-category-meta">2 examples</span>
+            <span class="g1-new-badge">New</span>
+          </header>
+          <div class="g1-examples-grid">
+            <article class="g1-trial-card">
+              <p class="g1-example-label">Example 1</p>
+              <div class="g1-dual-view">
+                <figure class="g1-view">
+                  <button class="g1-view-btn" data-full="images/realworld/hug_1_third.jpg" aria-label="Enlarge Hug example 1 third-person view">
+                    <img src="images/realworld/hug_1_third.jpg" alt="Hug example 1, third-person">
+                  </button>
+                  <figcaption><span class="view-dot third"></span>Third-person</figcaption>
+                </figure>
+                <figure class="g1-view">
+                  <button class="g1-view-btn" data-full="images/realworld/hug_1_ego.jpg" aria-label="Enlarge Hug example 1 robot view">
+                    <img src="images/realworld/hug_1_ego.jpg" alt="Hug example 1, robot view">
+                  </button>
+                  <figcaption><span class="view-dot ego"></span>First-person</figcaption>
+                </figure>
+              </div>
+            </article>
+            <article class="g1-trial-card">
+              <p class="g1-example-label">Example 2</p>
+              <div class="g1-dual-view">
+                <figure class="g1-view">
+                  <button class="g1-view-btn" data-full="images/realworld/hug_2_third.jpg" aria-label="Enlarge Hug example 2 third-person view">
+                    <img src="images/realworld/hug_2_third.jpg" alt="Hug example 2, third-person">
+                  </button>
+                  <figcaption><span class="view-dot third"></span>Third-person</figcaption>
+                </figure>
+                <figure class="g1-view">
+                  <button class="g1-view-btn" data-full="images/realworld/hug_2_ego.jpg" aria-label="Enlarge Hug example 2 robot view">
+                    <img src="images/realworld/hug_2_ego.jpg" alt="Hug example 2, robot view">
+                  </button>
+                  <figcaption><span class="view-dot ego"></span>First-person</figcaption>
+                </figure>
+              </div>
+            </article>
+          </div>
+        </section>
 
       </div>
     </div>
@@ -429,6 +566,6 @@
   <!-- Scripts -->
   <script src="vendor/katex/katex.min.js?v=3"></script>
   <script src="vendor/katex/auto-render.min.js?v=3"></script>
-  <script src="js/main.js?v=20"></script>
+  <script src="js/main.js?v=21"></script>
 </body>
 </html>
