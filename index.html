@@ -10,7 +10,7 @@
   <meta name="keywords" content="SIGN-Bench, VLM, Human-Robot Interaction, Embodied AI, Social Benchmark, Person Localization">
   
   <!-- Local styles only; keep off-site URLs out of markup -->
-  <link rel="stylesheet" href="css/style.css?v=23">
+  <link rel="stylesheet" href="css/style.css?v=27">
   <link rel="stylesheet" href="vendor/katex/katex.min.css?v=3">
 </head>
 <body>
@@ -137,7 +137,7 @@
             <tr>
               <th rowspan="2" class="col-rank">#</th>
               <th rowspan="2" class="col-model">Model</th>
-              <th rowspan="2">Type</th>
+              <th rowspan="2" class="col-type">Type</th>
               
               <!-- Overall -->
               <th colspan="4" class="th-group th-group-overall">Overall</th>
@@ -153,44 +153,44 @@
             <tr>
               <!-- Overall Metrics -->
               <th class="sortable col-gated-header" data-sort="overall.gated" title="Joint localization and exact-match success over all items (S = 100 p A_pass)">
-                Gated Acc. <span class="sort-icon">▼</span>
+                Gated<br>Acc. <span class="sort-icon">▼</span>
               </th>
               <th class="sortable" data-sort="overall.per" title="Stage 1 localization pass rate at IoU >= 0.5">
-                Human Per. <span class="sort-icon">↕</span>
+                Human<br>Per. <span class="sort-icon">↕</span>
               </th>
               <th class="sortable" data-sort="overall.nonverbal" title="Exact-match accuracy on items passing localization (Social Signal Understanding)">
-                Nonverbal Und. <span class="sort-icon">↕</span>
+                Nonverb.<br>Und. <span class="sort-icon">↕</span>
               </th>
               <th class="sortable" data-sort="overall.social" title="Exact-match accuracy on items passing localization (Social Reasoning)">
-                Social Reason. <span class="sort-icon">↕</span>
+                Social<br>Reason. <span class="sort-icon">↕</span>
               </th>
 
               <!-- Human-Human Metrics -->
               <th class="sortable col-gated-header" data-sort="hh.gated">
-                Gated Acc. <span class="sort-icon">↕</span>
+                Gated<br>Acc. <span class="sort-icon">↕</span>
               </th>
               <th class="sortable" data-sort="hh.per">
-                Human Per. <span class="sort-icon">↕</span>
+                Human<br>Per. <span class="sort-icon">↕</span>
               </th>
               <th class="sortable" data-sort="hh.nonverbal">
-                Nonverbal Und. <span class="sort-icon">↕</span>
+                Nonverb.<br>Und. <span class="sort-icon">↕</span>
               </th>
               <th class="sortable" data-sort="hh.social">
-                Social Reason. <span class="sort-icon">↕</span>
+                Social<br>Reason. <span class="sort-icon">↕</span>
               </th>
 
               <!-- Human-Robot Metrics -->
               <th class="sortable col-gated-header" data-sort="hr.gated">
-                Gated Acc. <span class="sort-icon">↕</span>
+                Gated<br>Acc. <span class="sort-icon">↕</span>
               </th>
               <th class="sortable" data-sort="hr.per">
-                Human Per. <span class="sort-icon">↕</span>
+                Human<br>Per. <span class="sort-icon">↕</span>
               </th>
               <th class="sortable" data-sort="hr.nonverbal">
-                Nonverbal Und. <span class="sort-icon">↕</span>
+                Nonverb.<br>Und. <span class="sort-icon">↕</span>
               </th>
               <th class="sortable" data-sort="hr.social">
-                Social Reason. <span class="sort-icon">↕</span>
+                Social<br>Reason. <span class="sort-icon">↕</span>
               </th>
             </tr>
           </thead>
