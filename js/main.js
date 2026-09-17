@@ -546,7 +546,7 @@ function renderLeaderboard() {
     row.innerHTML = `
       <td class="col-rank">${rankHtml}</td>
       <td class="col-model">
-        <a href="${publicHttps(model.link)}" target="_blank" rel="noopener noreferrer" class="model-link" title="${model.category === "proprietary" ? "Open official technical blog for" : "Open Hugging Face page for"} ${model.name}">
+        <a href="#" data-ext="${model.link}" class="model-link" title="${model.category === "proprietary" ? "Open official technical blog for" : "Open Hugging Face page for"} ${model.name}">
           ${model.name}
           <svg class="external-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
@@ -576,6 +576,13 @@ function renderLeaderboard() {
       ${formatScore('hr.social')}
     `;
     tbody.appendChild(row);
+    const modelLink = row.querySelector(".model-link");
+    if (modelLink) {
+      modelLink.addEventListener("click", (event) => {
+        event.preventDefault();
+        window.open(publicHttps(model.link), "_blank", "noopener,noreferrer");
+      });
+    }
   });
 
   updateSortHeaders();
