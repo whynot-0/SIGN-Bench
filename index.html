@@ -10,7 +10,7 @@
   <meta name="keywords" content="SIGN-Bench, VLM, Human-Robot Interaction, Embodied AI, Social Benchmark, Person Localization">
   
   <!-- Local styles only; keep off-site URLs out of markup -->
-  <link rel="stylesheet" href="css/style.css?v=12">
+  <link rel="stylesheet" href="css/style.css?v=20">
   <link rel="stylesheet" href="vendor/katex/katex.min.css?v=3">
 </head>
 <body>
@@ -222,7 +222,7 @@
           <span class="section-tag">Capability Breakdown</span>
           <h3 class="heatmap-heading">Per-Capability Scores</h3>
           <p class="heatmap-legend-copy">
-            Each cell is the score on one capability. Color follows a sequential ink scale from warm paper (low) to navy (high).
+            Each cell is the score on one capability. Color follows a sequential scale from pale seafoam (low) to royal sapphire (high).
           </p>
           <div class="heatmap-scale" aria-hidden="true">
             <span>Low</span>
@@ -298,25 +298,14 @@
         </p>
       </div>
 
-      <div class="g1-results-block">
-        <div class="heatmap-intro">
-          <span class="section-tag">Hardware Leaderboard</span>
-          <h3 class="heatmap-heading">G1 Human–Robot Results</h3>
-          <p class="heatmap-legend-copy">
-            110 items, all Human–Robot. Acc. is the cascade exact-match rate: Stage-1 pass ($\mathrm{IoU}\ge 0.5$) times Stage-2 set-level Acc; failed localization scores 0. Social Signal Understanding and Social Reasoning are set-level exact match on items that enter that layer. Values $\times 100$. Ranking views exclude API-fail Qwen-Max / GLM-5.3-Flash.
-          </p>
-        </div>
-        <div id="g1-table-root"></div>
+    <div class="rank-gallery-block">
+      <div class="heatmap-intro">
+        <span class="section-tag">Rank Concordance</span>
+        <h3 class="heatmap-heading">SIGN-Bench vs. G1 Ranking</h3>
+        <p class="heatmap-legend-copy" id="rank-gallery-lead">
+          Five views of the same paired ranking. Hover any point to see the model; one view will be kept.
+        </p>
       </div>
-
-      <div class="rank-gallery-block">
-        <div class="heatmap-intro">
-          <span class="section-tag">Rank Concordance</span>
-          <h3 class="heatmap-heading">SIGN-Bench vs. G1 Ranking</h3>
-          <p class="heatmap-legend-copy" id="rank-gallery-lead">
-            Five statistical views of the same $n$ paired ranks. Swipe or use the arrows; one view will be kept.
-          </p>
-        </div>
         <div class="rank-gallery">
           <button type="button" class="rank-gallery-btn" id="rank-gallery-prev" aria-label="Previous chart">&#10094;</button>
           <div class="rank-gallery-viewport" id="rank-gallery-viewport">
@@ -440,6 +429,6 @@
   <!-- Scripts -->
   <script src="vendor/katex/katex.min.js?v=3"></script>
   <script src="vendor/katex/auto-render.min.js?v=3"></script>
-  <script src="js/main.js?v=11"></script>
+  <script src="js/main.js?v=20"></script>
 </body>
 </html>

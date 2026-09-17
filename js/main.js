@@ -879,15 +879,15 @@ function lerp(a, b, t) {
 }
 
 function heatmapRgb(value) {
-  const t = Math.max(0, Math.min(1, Math.pow(value / 72, 0.9)));
+  const t = Math.max(0, Math.min(1, Math.pow(value / 72, 0.88)));
   const stops = [
-    [0.00, [246, 244, 239]],
-    [0.16, [220, 214, 202]],
-    [0.32, [176, 190, 204]],
-    [0.50, [122, 148, 178]],
-    [0.68, [72, 108, 156]],
-    [0.84, [36, 74, 132]],
-    [1.00, [14, 32, 74]]
+    [0.00, [240, 253, 250]],
+    [0.18, [204, 251, 241]],
+    [0.36, [153, 246, 228]],
+    [0.54, [56, 189, 248]],
+    [0.72, [37, 99, 235]],
+    [0.88, [29, 78, 216]],
+    [1.00, [30, 58, 138]]
   ];
   let i = 0;
   while (i < stops.length - 1 && t > stops[i + 1][0]) i += 1;
@@ -903,7 +903,7 @@ function heatmapRgb(value) {
 
 function heatmapTextColor(rgb) {
   const y = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255;
-  return y > 0.55 ? "#1c1917" : "#f8f5ef";
+  return y > 0.62 ? "#0f172a" : "#ffffff";
 }
 
 function heatmapCell(value, extraClass) {
@@ -992,9 +992,9 @@ const G1_GROUPS = [
 ];
 
 const RANK_CAT = {
-  proprietary: { fill: "#1d4ed8", label: "API" },
-  general: { fill: "#0f766e", label: "General VLM" },
-  embodied: { fill: "#6d28d9", label: "Embodied VLM" }
+  proprietary: { fill: "#2563eb", label: "API" },
+  general: { fill: "#0d9488", label: "General VLM" },
+  embodied: { fill: "#8b5cf6", label: "Embodied VLM" }
 };
 
 function escXml(value) {
@@ -1099,15 +1099,15 @@ function olsFit(xs, ys) {
 
 function shortModelName(name) {
   return name
-    .replace("HY-Embodied-VLM-1.0-30B-A3B", "HY-VLM-1.0")
+    .replace("HY-Embodied-VLM-1.0-30B-A3B", "HY-VLM-30B")
     .replace("HY-Embodied-0.5-X-4B-A2B", "HY-0.5-X")
     .replace("HY-Embodied-0.5-4B-A2B", "HY-0.5")
-    .replace("Gemini Robotics-ER-2", "G. Robotics")
-    .replace("Gemini 3.7 Flash", "G. 3.7")
-    .replace("Gemini 3.1 Pro", "G. 3.1")
+    .replace("Gemini Robotics-ER-2", "Gemini ER-2")
+    .replace("Gemini 3.7 Flash", "Gemini 3.7")
+    .replace("Gemini 3.1 Pro", "Gemini 3.1")
     .replace("InternVL3.5-30B-A3B", "InternVL-30B")
     .replace("InternVL3.5-38B", "InternVL-38B")
-    .replace("RoboBrain2.0-32B", "RoboBrain")
+    .replace("RoboBrain2.0-32B", "RoboBrain-32B")
     .replace("RynnBrain1.1-2B", "Rynn-2B")
     .replace("RynnBrain-30B-A3B", "Rynn-30B")
     .replace("Qwen3.5-35B-A3B", "Qwen3.5-35B")
@@ -1197,15 +1197,23 @@ function rankBundle() {
     ...row,
     benchRank: benchRank[i],
     hrRank: hrRank[i],
-    g1Rank: g1Rank[i]
+    g1Rank: g1Rank[i],
+    delta: benchRank[i] - g1Rank[i]
   }));
+  const benchAvg = rankHighIsBest(bench);
+  const g1Avg = rankHighIsBest(g1);
+  const absDelta = rows.map((_, i) => Math.abs(benchAvg[i] - g1Avg[i]));
+  annotated.sort((a, b) => a.benchRank - b.benchRank);
+  const within2 = absDelta.filter((value) => value <= 2).length;
   return {
     rows: annotated,
     n: annotated.length,
-    spearman: pearson(rankHighIsBest(bench), rankHighIsBest(g1)),
+    spearman: pearson(benchAvg, g1Avg),
     spearmanHr: pearson(rankHighIsBest(hr), rankHighIsBest(g1)),
     kendall: kendallTau(bench, g1),
-    pearson: pearson(bench, g1)
+    pearson: pearson(bench, g1),
+    within2,
+    meanAbs: mean(absDelta)
   };
 }
 
@@ -1224,8 +1232,8 @@ function niceTicks(min, max, count) {
 function svgLegend() {
   const items = [
     ["proprietary", 0],
-    ["general", 78],
-    ["embodied", 188]
+    ["general", 82],
+    ["embodied", 198]
   ];
   return items.map(([key, x]) => {
     const cat = RANK_CAT[key];
@@ -1236,71 +1244,16 @@ function svgLegend() {
   }).join("");
 }
 
-function chartScatter(data) {
-  const xs = data.rows.map((row) => row.bench);
-  const ys = data.rows.map((row) => row.g1);
-  const fit = olsFit(xs, ys);
-  const W = 760;
-  const H = 430;
-  const L = 52;
-  const R = 18;
-  const T = 36;
-  const B = 48;
-  const xmin = 10;
-  const xmax = 54;
-  const ymin = 8;
-  const ymax = 76;
-  const xOf = (v) => L + ((v - xmin) / (xmax - xmin)) * (W - L - R);
-  const yOf = (v) => T + (1 - (v - ymin) / (ymax - ymin)) * (H - T - B);
-  const x0 = xmin;
-  const x1 = xmax;
-  const y0 = fit.intercept + fit.slope * x0;
-  const y1 = fit.intercept + fit.slope * x1;
-  const band = [];
-  for (let i = 0; i <= 20; i += 1) {
-    const x = xmin + (i / 20) * (xmax - xmin);
-    const yhat = fit.intercept + fit.slope * x;
-    const seFit = fit.se * Math.sqrt(1 / fit.n + ((x - fit.mx) ** 2) / fit.sxx);
-    band.push({ x, lo: yhat - 1.96 * seFit, hi: yhat + 1.96 * seFit });
-  }
-  const bandPath = [
-    `M ${xOf(band[0].x)} ${yOf(band[0].hi)}`,
-    ...band.map((p) => `L ${xOf(p.x)} ${yOf(p.hi)}`),
-    ...band.slice().reverse().map((p) => `L ${xOf(p.x)} ${yOf(p.lo)}`),
-    "Z"
-  ].join(" ");
-  const xt = niceTicks(xmin, xmax, 6).filter((v) => v >= xmin && v <= xmax);
-  const yt = niceTicks(ymin, ymax, 7).filter((v) => v >= ymin && v <= ymax);
-  const grid = [
-    ...xt.map((v) => `<line x1="${xOf(v)}" x2="${xOf(v)}" y1="${T}" y2="${H - B}" class="rank-svg-grid"/>`),
-    ...yt.map((v) => `<line x1="${L}" x2="${W - R}" y1="${yOf(v)}" y2="${yOf(v)}" class="rank-svg-grid"/>`)
-  ].join("");
-  const labels = new Set(["Gemini 3.7 Flash", "Qwen3.8-27B", "InternVL3.5-38B", "RoboBrain2.0-32B", "Qwen3.6-27B"]);
-  const dots = data.rows.map((row) => {
-    const cx = xOf(row.bench);
-    const cy = yOf(row.g1);
-    const label = labels.has(row.name)
-      ? `<text x="${cx + 8}" y="${cy - 8}" class="rank-svg-label">${escXml(row.short)}</text>`
-      : "";
-    return `<g>
-      <circle cx="${cx}" cy="${cy}" r="5.4" fill="${RANK_CAT[row.category].fill}" stroke="#fff" stroke-width="1.5">
-        <title>${escXml(row.name)} · Bench ${row.bench.toFixed(1)} · G1 ${row.g1.toFixed(1)}</title>
-      </circle>
-      ${label}
-    </g>`;
-  }).join("");
-  return `<svg class="rank-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Scatter of SIGN-Bench gated accuracy versus G1 accuracy">
-    ${grid}
-    <path d="${bandPath}" fill="rgba(37,99,235,0.10)"/>
-    <line x1="${xOf(x0)}" y1="${yOf(y0)}" x2="${xOf(x1)}" y2="${yOf(y1)}" class="rank-svg-fit"/>
-    ${dots}
-    ${xt.map((v) => `<text x="${xOf(v)}" y="${H - 18}" class="rank-svg-tick" text-anchor="middle">${v}</text>`).join("")}
-    ${yt.map((v) => `<text x="${L - 8}" y="${yOf(v) + 4}" class="rank-svg-tick" text-anchor="end">${v}</text>`).join("")}
-    <text x="${(L + W - R) / 2}" y="${H - 4}" class="rank-svg-axis" text-anchor="middle">SIGN-Bench gated Acc.</text>
-    <text x="14" y="${(T + H - B) / 2}" class="rank-svg-axis" text-anchor="middle" transform="rotate(-90 14 ${(T + H - B) / 2})">G1 Acc.</text>
-    <g transform="translate(${L},10)">${svgLegend()}</g>
-    <text x="${W - R}" y="22" class="rank-svg-stat" text-anchor="end">ρₛ = ${data.spearman.toFixed(3)}  ·  τ = ${data.kendall.toFixed(3)}</text>
-  </svg>`;
+function signedDelta(value) {
+  if (value > 0) return `+${value}`;
+  return String(value);
+}
+
+function hitDot(cx, cy, fill, radius, name, meta) {
+  return `<g class="rank-hit" data-name="${escXml(name)}" data-meta="${escXml(meta)}" transform="translate(${cx},${cy})">
+    <circle class="rank-hit-pad" r="14" fill="transparent"/>
+    <circle class="rank-hit-dot" r="${radius}" fill="${fill}" stroke="#fff" stroke-width="1.5"/>
+  </g>`;
 }
 
 function chartRankRank(data) {
@@ -1308,7 +1261,7 @@ function chartRankRank(data) {
   const W = 760;
   const H = 430;
   const L = 52;
-  const R = 18;
+  const R = 20;
   const T = 36;
   const B = 48;
   const xOf = (r) => L + ((r - 1) / (n - 1)) * (W - L - R);
@@ -1318,20 +1271,14 @@ function chartRankRank(data) {
     <line x1="${xOf(v)}" x2="${xOf(v)}" y1="${T}" y2="${H - B}" class="rank-svg-grid"/>
     <line x1="${L}" x2="${W - R}" y1="${yOf(v)}" y2="${yOf(v)}" class="rank-svg-grid"/>
   `).join("");
-  const labels = new Set(["Gemini 3.7 Flash", "Qwen3.8-27B", "InternVL3.5-38B", "RoboBrain2.0-32B"]);
-  const dots = data.rows.map((row) => {
-    const cx = xOf(row.benchRank);
-    const cy = yOf(row.g1Rank);
-    const label = labels.has(row.name)
-      ? `<text x="${cx + 8}" y="${cy - 7}" class="rank-svg-label">${escXml(row.short)}</text>`
-      : "";
-    return `<g>
-      <circle cx="${cx}" cy="${cy}" r="5.4" fill="${RANK_CAT[row.category].fill}" stroke="#fff" stroke-width="1.5">
-        <title>${escXml(row.name)} · Bench rank ${row.benchRank} · G1 rank ${row.g1Rank}</title>
-      </circle>
-      ${label}
-    </g>`;
-  }).join("");
+  const dots = data.rows.map((row) => hitDot(
+    xOf(row.benchRank),
+    yOf(row.g1Rank),
+    RANK_CAT[row.category].fill,
+    6,
+    row.name,
+    `SIGN-Bench rank ${row.benchRank}  ·  G1 rank ${row.g1Rank}  ·  Δ ${signedDelta(row.delta)}`
+  )).join("");
   return `<svg class="rank-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Rank-rank scatter of SIGN-Bench versus G1">
     ${grid}
     <line x1="${xOf(1)}" y1="${yOf(1)}" x2="${xOf(n)}" y2="${yOf(n)}" class="rank-svg-identity"/>
@@ -1341,7 +1288,7 @@ function chartRankRank(data) {
     <text x="${(L + W - R) / 2}" y="${H - 4}" class="rank-svg-axis" text-anchor="middle">SIGN-Bench rank (1 = best)</text>
     <text x="14" y="${(T + H - B) / 2}" class="rank-svg-axis" text-anchor="middle" transform="rotate(-90 14 ${(T + H - B) / 2})">G1 rank (1 = best)</text>
     <g transform="translate(${L},10)">${svgLegend()}</g>
-    <text x="${W - R}" y="22" class="rank-svg-stat" text-anchor="end">identity = perfect concordance</text>
+    <text x="${W - R}" y="22" class="rank-svg-stat" text-anchor="end">Spearman ρₛ = ${data.spearman.toFixed(3)}  ·  Kendall τ = ${data.kendall.toFixed(3)}</text>
   </svg>`;
 }
 
@@ -1349,114 +1296,244 @@ function chartSlope(data) {
   const ordered = [...data.rows].sort((a, b) => a.benchRank - b.benchRank);
   const W = 760;
   const H = 540;
-  const L = 138;
-  const R = 138;
-  const T = 36;
+  const L = 148;
+  const R = 148;
+  const T = 40;
   const B = 28;
   const yOf = (rank) => T + ((rank - 1) / (data.n - 1)) * (H - T - B);
   const lines = ordered.map((row) => {
     const y1 = yOf(row.benchRank);
     const y2 = yOf(row.g1Rank);
-    const delta = Math.abs(row.benchRank - row.g1Rank);
-    const op = Math.max(0.22, 0.92 - delta / 18);
+    const delta = Math.abs(row.delta);
+    const color = RANK_CAT[row.category].fill;
+    const op = Math.max(0.28, 0.95 - delta / 18);
+    const meta = `SIGN-Bench rank ${row.benchRank}  ·  G1 rank ${row.g1Rank}  ·  Δ ${signedDelta(row.delta)}`;
     return `<g>
-      <line x1="${L}" y1="${y1}" x2="${W - R}" y2="${y2}" stroke="${RANK_CAT[row.category].fill}" stroke-width="${delta < 3 ? 2.2 : 1.25}" stroke-opacity="${op}">
-        <title>${escXml(row.name)}</title>
-      </line>
-      <circle cx="${L}" cy="${y1}" r="3.4" fill="${RANK_CAT[row.category].fill}"/>
-      <circle cx="${W - R}" cy="${y2}" r="3.4" fill="${RANK_CAT[row.category].fill}"/>
-      <text x="${L - 10}" y="${y1 + 4}" class="rank-svg-side" text-anchor="end">${escXml(row.short)}</text>
-      <text x="${W - R + 10}" y="${y2 + 4}" class="rank-svg-side">${escXml(row.short)}</text>
+      <line x1="${L}" y1="${y1}" x2="${W - R}" y2="${y2}" stroke="${color}" stroke-width="${delta < 3 ? 2.4 : 1.3}" stroke-opacity="${op}"/>
+      <g class="rank-hit" data-name="${escXml(row.name)}" data-meta="${escXml(meta)}">
+        <line x1="${L}" y1="${y1}" x2="${W - R}" y2="${y2}" stroke="transparent" stroke-width="12"/>
+      </g>
+      ${hitDot(L, y1, color, 4.2, row.name, meta)}
+      ${hitDot(W - R, y2, color, 4.2, row.name, meta)}
+      <text x="${L - 12}" y="${y1 + 4}" class="rank-svg-side" text-anchor="end">${escXml(row.short)}</text>
+      <text x="${W - R + 12}" y="${y2 + 4}" class="rank-svg-side">${escXml(row.short)}</text>
     </g>`;
   }).join("");
   return `<svg class="rank-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Slopegraph of ranks from SIGN-Bench to G1">
-    <text x="${L}" y="18" class="rank-svg-axis" text-anchor="middle">SIGN-Bench</text>
-    <text x="${W - R}" y="18" class="rank-svg-axis" text-anchor="middle">G1 robot</text>
+    <text x="${L}" y="18" class="rank-svg-axis" text-anchor="middle">SIGN-Bench rank</text>
+    <text x="${W - R}" y="18" class="rank-svg-axis" text-anchor="middle">G1 rank</text>
     ${lines}
-    <g transform="translate(${(W / 2) - 140},${H - 14})">${svgLegend()}</g>
+    <g transform="translate(${(W / 2) - 150},${H - 12})">${svgLegend()}</g>
   </svg>`;
 }
 
-function chartBlandAltman(data) {
-  const deltas = data.rows.map((row) => row.benchRank - row.g1Rank);
-  const means = data.rows.map((row) => (row.benchRank + row.g1Rank) / 2);
-  const m = mean(deltas);
-  const s = stdev(deltas);
-  const lo = m - 1.96 * s;
-  const hi = m + 1.96 * s;
-  const W = 760;
-  const H = 430;
-  const L = 52;
-  const R = 18;
-  const T = 36;
-  const B = 48;
-  const xmin = 1;
-  const xmax = data.n;
-  const ymin = Math.min(-12, lo - 1.5);
-  const ymax = Math.max(12, hi + 1.5);
-  const xOf = (v) => L + ((v - xmin) / (xmax - xmin)) * (W - L - R);
-  const yOf = (v) => T + (1 - (v - ymin) / (ymax - ymin)) * (H - T - B);
-  const xt = niceTicks(xmin, xmax, 6);
-  const yt = niceTicks(ymin, ymax, 7);
-  const grid = [
-    ...xt.map((v) => `<line x1="${xOf(v)}" x2="${xOf(v)}" y1="${T}" y2="${H - B}" class="rank-svg-grid"/>`),
-    ...yt.map((v) => `<line x1="${L}" x2="${W - R}" y1="${yOf(v)}" y2="${yOf(v)}" class="rank-svg-grid"/>`)
-  ].join("");
-  const dots = data.rows.map((row, i) => `<circle cx="${xOf(means[i])}" cy="${yOf(deltas[i])}" r="5.4" fill="${RANK_CAT[row.category].fill}" stroke="#fff" stroke-width="1.5">
-    <title>${escXml(row.name)} · Δrank ${deltas[i].toFixed(1)}</title>
-  </circle>`).join("");
-  return `<svg class="rank-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Bland-Altman plot of paired ranks">
-    ${grid}
-    <line x1="${L}" x2="${W - R}" y1="${yOf(0)}" y2="${yOf(0)}" class="rank-svg-identity"/>
-    <line x1="${L}" x2="${W - R}" y1="${yOf(m)}" y2="${yOf(m)}" class="rank-svg-fit"/>
-    <line x1="${L}" x2="${W - R}" y1="${yOf(lo)}" y2="${yOf(lo)}" class="rank-svg-limit"/>
-    <line x1="${L}" x2="${W - R}" y1="${yOf(hi)}" y2="${yOf(hi)}" class="rank-svg-limit"/>
-    ${dots}
-    ${xt.map((v) => `<text x="${xOf(v)}" y="${H - 18}" class="rank-svg-tick" text-anchor="middle">${v}</text>`).join("")}
-    ${yt.map((v) => `<text x="${L - 8}" y="${yOf(v) + 4}" class="rank-svg-tick" text-anchor="end">${v}</text>`).join("")}
-    <text x="${(L + W - R) / 2}" y="${H - 4}" class="rank-svg-axis" text-anchor="middle">Mean rank (SIGN-Bench, G1)</text>
-    <text x="14" y="${(T + H - B) / 2}" class="rank-svg-axis" text-anchor="middle" transform="rotate(-90 14 ${(T + H - B) / 2})">Rank Δ (Bench − G1)</text>
-    <g transform="translate(${L},10)">${svgLegend()}</g>
-    <text x="${W - R}" y="22" class="rank-svg-stat" text-anchor="end">mean Δ = ${m.toFixed(2)}  ·  ±1.96 SD</text>
-  </svg>`;
-}
-
-function chartTopK(data) {
+function chartDualLine(data) {
   const n = data.n;
-  const benchOrder = [...data.rows].sort((a, b) => a.benchRank - b.benchRank).map((row) => row.name);
-  const g1Order = [...data.rows].sort((a, b) => a.g1Rank - b.g1Rank).map((row) => row.name);
-  const ys = [];
-  for (let k = 1; k <= n; k += 1) {
-    const a = new Set(benchOrder.slice(0, k));
-    const b = g1Order.slice(0, k);
-    ys.push(b.filter((name) => a.has(name)).length / k);
-  }
   const W = 760;
-  const H = 430;
-  const L = 52;
-  const R = 18;
+  const H = 460;
+  const L = 46;
+  const R = 24;
+  const T = 42;
+  const B = 92;
+  const xOf = (i) => L + (i / (n - 1)) * (W - L - R);
+  const yOf = (r) => T + ((r - 1) / (n - 1)) * (H - T - B);
+
+  const yTicks = [1, 5, 10, 15, 20, 22].filter((v) => v <= n);
+  const grid = yTicks.map((r) => `
+    <line x1="${L}" x2="${W - R}" y1="${yOf(r)}" y2="${yOf(r)}" class="rank-svg-grid"/>
+  `).join("");
+
+  const bandPoints = [
+    `M ${xOf(0)} ${yOf(data.rows[0].benchRank)}`,
+    ...data.rows.map((row, i) => `L ${xOf(i)} ${yOf(row.benchRank)}`),
+    ...data.rows.slice().reverse().map((row, i) => `L ${xOf(n - 1 - i)} ${yOf(row.g1Rank)}`),
+    "Z"
+  ].join(" ");
+
+  const benchPath = data.rows.map((row, i) => `${i === 0 ? "M" : "L"} ${xOf(i)} ${yOf(row.benchRank)}`).join(" ");
+  const g1Path = data.rows.map((row, i) => `${i === 0 ? "M" : "L"} ${xOf(i)} ${yOf(row.g1Rank)}`).join(" ");
+
+  const benchDots = data.rows.map((row, i) => hitDot(
+    xOf(i),
+    yOf(row.benchRank),
+    "#2563eb",
+    3.8,
+    row.name,
+    `SIGN-Bench rank ${row.benchRank}  ·  G1 rank ${row.g1Rank}  ·  Δ ${signedDelta(row.delta)}`
+  )).join("");
+
+  const g1Dots = data.rows.map((row, i) => hitDot(
+    xOf(i),
+    yOf(row.g1Rank),
+    "#ea580c",
+    4.4,
+    row.name,
+    `SIGN-Bench rank ${row.benchRank}  ·  G1 rank ${row.g1Rank}  ·  Δ ${signedDelta(row.delta)}`
+  )).join("");
+
+  const xLabels = data.rows.map((row, i) => {
+    const cx = xOf(i);
+    const cy = H - B + 14;
+    return `
+      <line x1="${cx}" x2="${cx}" y1="${H - B}" y2="${H - B + 4}" stroke="#cbd5e1" stroke-width="1"/>
+      <text x="${cx}" y="${cy}" class="rank-svg-xname" transform="rotate(45 ${cx} ${cy})">${escXml(row.short)}</text>
+    `;
+  }).join("");
+
+  const yLabels = yTicks.map((r) => `
+    <text x="${L - 8}" y="${yOf(r) + 4}" class="rank-svg-tick" text-anchor="end">${r}</text>
+  `).join("");
+
+  return `<svg class="rank-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Dual-line ranking trajectory from benchmark to robot">
+    ${grid}
+    <path d="${bandPoints}" fill="rgba(37,99,235,0.08)"/>
+    <path d="${benchPath}" stroke="#2563eb" stroke-width="2.4" fill="none" stroke-linejoin="round"/>
+    <path d="${g1Path}" stroke="#ea580c" stroke-width="2.2" fill="none" stroke-linejoin="round"/>
+    ${data.rows.map((row, i) => {
+      const x = xOf(i);
+      return `<g class="rank-hit" data-name="${escXml(row.name)}" data-meta="${escXml(`SIGN-Bench rank ${row.benchRank}  ·  G1 rank ${row.g1Rank}  ·  Δ ${signedDelta(row.delta)}`)}">
+        <rect x="${x - 11}" y="${T}" width="22" height="${H - T - B}" fill="transparent"/>
+      </g>`;
+    }).join("")}
+    ${benchDots}
+    ${g1Dots}
+    ${yLabels}
+    ${xLabels}
+    <text x="14" y="${(T + H - B) / 2}" class="rank-svg-axis" text-anchor="middle" transform="rotate(-90 14 ${(T + H - B) / 2})">Rank (1 = best)</text>
+    <g transform="translate(${L},12)">
+      <line x1="0" y1="6" x2="16" y2="6" stroke="#2563eb" stroke-width="2.4"/>
+      <circle cx="8" cy="6" r="3" fill="#2563eb"/>
+      <text x="22" y="10" class="rank-svg-legend">SIGN-Bench Baseline</text>
+      <line x1="160" y1="6" x2="176" y2="6" stroke="#ea580c" stroke-width="2.2"/>
+      <circle cx="168" cy="6" r="3.2" fill="#ea580c"/>
+      <text x="182" y="10" class="rank-svg-legend">G1 Robot Rank</text>
+      <rect x="296" y="2" width="14" height="8" fill="rgba(37,99,235,0.18)" rx="2"/>
+      <text x="316" y="10" class="rank-svg-legend">Displacement |Δ|</text>
+    </g>
+    <text x="${W - R}" y="22" class="rank-svg-stat" text-anchor="end">Spearman ρₛ = ${data.spearman.toFixed(3)}</text>
+  </svg>`;
+}
+
+function chartDumbbell(data) {
+  const n = data.n;
+  const W = 760;
+  const H = 550;
+  const L = 126;
+  const R = 60;
   const T = 36;
-  const B = 48;
-  const xOf = (k) => L + ((k - 1) / (n - 1)) * (W - L - R);
-  const yOf = (v) => T + (1 - v) * (H - T - B);
-  const area = [`M ${xOf(1)} ${yOf(0)}`, `L ${xOf(1)} ${yOf(ys[0])}`, ...ys.map((v, i) => `L ${xOf(i + 1)} ${yOf(v)}`), `L ${xOf(n)} ${yOf(0)}`, "Z"].join(" ");
-  const chance = [`M ${xOf(1)} ${yOf(1 / n)}`, ...ys.map((_, i) => `L ${xOf(i + 1)} ${yOf((i + 1) / n)}`)].join(" ");
-  const line = [`M ${xOf(1)} ${yOf(ys[0])}`, ...ys.map((v, i) => `L ${xOf(i + 1)} ${yOf(v)}`)].join(" ");
-  const xt = [1, 5, 10, 15, 22].filter((v) => v <= n);
-  const yt = [0, 0.25, 0.5, 0.75, 1];
-  return `<svg class="rank-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Top-k overlap between SIGN-Bench and G1 rankings">
-    ${xt.map((v) => `<line x1="${xOf(v)}" x2="${xOf(v)}" y1="${T}" y2="${H - B}" class="rank-svg-grid"/>`).join("")}
-    ${yt.map((v) => `<line x1="${L}" x2="${W - R}" y1="${yOf(v)}" y2="${yOf(v)}" class="rank-svg-grid"/>`).join("")}
-    <path d="${area}" fill="rgba(37,99,235,0.12)"/>
-    <path d="${chance}" class="rank-svg-limit" fill="none"/>
-    <path d="${line}" class="rank-svg-fit" fill="none"/>
-    ${xt.map((v) => `<text x="${xOf(v)}" y="${H - 18}" class="rank-svg-tick" text-anchor="middle">${v}</text>`).join("")}
-    ${yt.map((v) => `<text x="${L - 8}" y="${yOf(v) + 4}" class="rank-svg-tick" text-anchor="end">${v}</text>`).join("")}
-    <text x="${(L + W - R) / 2}" y="${H - 4}" class="rank-svg-axis" text-anchor="middle">Top-k models</text>
-    <text x="14" y="${(T + H - B) / 2}" class="rank-svg-axis" text-anchor="middle" transform="rotate(-90 14 ${(T + H - B) / 2})">Overlap / k</text>
-    <text x="${L + 8}" y="${T + 14}" class="rank-svg-legend">observed</text>
-    <text x="${L + 8}" y="${T + 30}" class="rank-svg-legend" fill="#94a3b8">chance (k / n)</text>
-    <text x="${W - R}" y="22" class="rank-svg-stat" text-anchor="end">top-5 overlap = ${(ys[4] * 100).toFixed(0)}%</text>
+  const B = 32;
+  const yOf = (i) => T + (i / (n - 1)) * (H - T - B);
+  const xOf = (r) => L + ((r - 1) / (n - 1)) * (W - L - R);
+  const xTicks = [1, 5, 10, 15, 20, 22].filter((v) => v <= n);
+
+  const grid = xTicks.map((r) => `
+    <line x1="${xOf(r)}" x2="${xOf(r)}" y1="${T}" y2="${H - B}" class="rank-svg-grid"/>
+  `).join("");
+
+  const rows = data.rows.map((row, i) => {
+    const y = yOf(i);
+    const x1 = xOf(row.benchRank);
+    const x2 = xOf(row.g1Rank);
+    const near = Math.abs(row.delta) <= 2;
+    const barColor = near ? "#93c5fd" : "#fdba74";
+    const bar = x1 !== x2
+      ? `<line x1="${x1}" x2="${x2}" y1="${y}" y2="${y}" stroke="${barColor}" stroke-width="3" stroke-linecap="round"/>`
+      : "";
+    const sign = row.delta > 0 ? "+" : "";
+    const deltaStr = row.delta === 0 ? "0" : `${sign}${row.delta}`;
+    const deltaCls = near ? "near" : "shift";
+
+    return `
+      <line x1="${L}" x2="${W - R}" y1="${y}" y2="${y}" stroke="#f1f5f9" stroke-width="1"/>
+      <text x="${L - 10}" y="${y + 3.5}" class="rank-svg-side" text-anchor="end">${escXml(row.short)}</text>
+      ${bar}
+      ${hitDot(x1, y, "#2563eb", 4.6, row.name, `SIGN-Bench rank ${row.benchRank}  ·  G1 rank ${row.g1Rank}  ·  Δ ${signedDelta(row.delta)}`)}
+      ${hitDot(x2, y, "#ea580c", 4.6, row.name, `SIGN-Bench rank ${row.benchRank}  ·  G1 rank ${row.g1Rank}  ·  Δ ${signedDelta(row.delta)}`)}
+      <text x="${W - R + 14}" y="${y + 3.5}" class="rank-svg-delta ${deltaCls}">${deltaStr}</text>
+    `;
+  }).join("");
+
+  const ticks = xTicks.map((r) => `
+    <text x="${xOf(r)}" y="${H - 14}" class="rank-svg-tick" text-anchor="middle">${r}</text>
+  `).join("");
+
+  return `<svg class="rank-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Model-by-model rank alignment dumbbell plot">
+    ${grid}
+    ${rows}
+    ${ticks}
+    <text x="${(L + W - R) / 2}" y="${H - 2}" class="rank-svg-axis" text-anchor="middle">Rank position (1 = best)</text>
+    <g transform="translate(${L},12)">
+      <circle cx="5" cy="5" r="4.2" fill="#2563eb"/>
+      <text x="14" y="9" class="rank-svg-legend">SIGN-Bench</text>
+      <circle cx="95" cy="5" r="4.2" fill="#ea580c"/>
+      <text x="104" y="9" class="rank-svg-legend">G1 Robot</text>
+      <rect x="180" y="3" width="14" height="4" rx="2" fill="#93c5fd"/>
+      <text x="200" y="9" class="rank-svg-legend">|Δ| ≤ 2 (${data.within2} of ${data.n} models)</text>
+    </g>
+    <text x="${W - R + 14}" y="18" class="rank-svg-side" font-weight="700">Δrank</text>
+  </svg>`;
+}
+
+function chartDeviation(data) {
+  const n = data.n;
+  const W = 760;
+  const H = 460;
+  const L = 46;
+  const R = 24;
+  const T = 42;
+  const B = 92;
+  const xOf = (i) => L + (i / (n - 1)) * (W - L - R);
+  const minV = -8;
+  const maxV = 8;
+  const yOf = (v) => T + ((maxV - v) / (maxV - minV)) * (H - T - B);
+  const yZero = yOf(0);
+
+  const yTicks = [-6, -4, -2, 0, 2, 4, 6];
+  const grid = yTicks.map((v) => `
+    <line x1="${L}" x2="${W - R}" y1="${yOf(v)}" y2="${yOf(v)}" class="${v === 0 ? 'rank-svg-identity' : 'rank-svg-grid'}"/>
+    <text x="${L - 8}" y="${yOf(v) + 4}" class="rank-svg-tick" text-anchor="end">${v > 0 ? "+" + v : v}</text>
+  `).join("");
+
+  const corridorH = yOf(-2) - yOf(2);
+  const corridor = `
+    <rect x="${L}" y="${yOf(2)}" width="${W - L - R}" height="${corridorH}" fill="rgba(37,99,235,0.06)" rx="4"/>
+    <line x1="${L}" x2="${W - R}" y1="${yOf(2)}" y2="${yOf(2)}" stroke="#bfdbfe" stroke-width="1" stroke-dasharray="3 3"/>
+    <line x1="${L}" x2="${W - R}" y1="${yOf(-2)}" y2="${yOf(-2)}" stroke="#bfdbfe" stroke-width="1" stroke-dasharray="3 3"/>
+  `;
+
+  const bars = data.rows.map((row, i) => {
+    const cx = xOf(i);
+    const cy = yOf(row.delta);
+    const near = Math.abs(row.delta) <= 2;
+    const color = near ? "#2563eb" : "#ea580c";
+    return `
+      <line x1="${cx}" x2="${cx}" y1="${yZero}" y2="${cy}" stroke="${color}" stroke-width="2.6" stroke-linecap="round"/>
+      ${hitDot(cx, cy, color, 4.4, row.name, `SIGN-Bench rank ${row.benchRank}  ·  G1 rank ${row.g1Rank}  ·  Δ ${signedDelta(row.delta)}`)}
+    `;
+  }).join("");
+
+  const xLabels = data.rows.map((row, i) => {
+    const cx = xOf(i);
+    const cy = H - B + 14;
+    return `
+      <line x1="${cx}" x2="${cx}" y1="${H - B}" y2="${H - B + 4}" stroke="#cbd5e1" stroke-width="1"/>
+      <text x="${cx}" y="${cy}" class="rank-svg-xname" transform="rotate(45 ${cx} ${cy})">${escXml(row.short)}</text>
+    `;
+  }).join("");
+
+  return `<svg class="rank-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Model-by-model rank deviation from baseline">
+    ${grid}
+    ${corridor}
+    ${bars}
+    ${xLabels}
+    <text x="14" y="${(T + H - B) / 2}" class="rank-svg-axis" text-anchor="middle" transform="rotate(-90 14 ${(T + H - B) / 2})">ΔRank (Bench − G1)</text>
+    <g transform="translate(${L},12)">
+      <circle cx="5" cy="5" r="4" fill="#2563eb"/>
+      <text x="14" y="9" class="rank-svg-legend">|Δ| ≤ 2 (${data.within2} models)</text>
+      <circle cx="170" cy="5" r="4" fill="#ea580c"/>
+      <text x="179" y="9" class="rank-svg-legend">|Δ| &gt; 2 (${data.n - data.within2} models)</text>
+    </g>
+    <text x="${W - R}" y="20" class="rank-svg-stat" text-anchor="end">Mean |Δ| = ${data.meanAbs.toFixed(2)} ranks</text>
   </svg>`;
 }
 
@@ -1473,38 +1550,38 @@ function renderRankGallery() {
   const data = rankBundle();
   if (hero) hero.textContent = `ρ = ${formatRho(data.spearman)}`;
   if (lead) {
-    lead.innerHTML = `Paired ranks for $n=${data.n}$ models (API-fail Qwen-Max / GLM omitted). Spearman $\\rho_s=${formatRho(data.spearman)}$ vs. overall gated Acc.; $\\rho_s=${formatRho(data.spearmanHr)}$ vs. the human–robot subset. Kendall $\\tau=${formatRho(data.kendall)}$. Swipe to compare five views; one will be kept.`;
+    lead.innerHTML = `Ranking correlation between SIGN-Bench and G1 for $n=${data.n}$ models (API-fail Qwen-Max / GLM omitted). Spearman $\\rho_s=${formatRho(data.spearman)}$; Kendall $\\tau=${formatRho(data.kendall)}$. Hover any point to identify the model.`;
   }
   const slides = [
     {
       kicker: "01 / 05",
-      title: "Score scatter",
-      copy: "G1 Acc. against SIGN-Bench gated Acc., with an OLS fit and 95% mean band. Tight clustering along the line is score-level transfer.",
-      svg: chartScatter(data)
-    },
-    {
-      kicker: "02 / 05",
-      title: "Rank–rank identity",
-      copy: "Each point is a model’s rank on both boards (1 = best). The diagonal is perfect concordance; Spearman is the correlation of these ranks.",
+      title: "Rank–rank scatter",
+      copy: "Each point is one model’s rank on SIGN-Bench (x) versus G1 (y). Both axes are ranks (1 = best). The dashed line is perfect agreement; clustering on the diagonal is the ranking correlation.",
       svg: chartRankRank(data)
     },
     {
+      kicker: "02 / 05",
+      title: "Dual-line rank trajectory",
+      copy: "Models ordered left-to-right by SIGN-Bench rank. Blue is the benchmark ranking; coral is the G1 ranking. Both series are ranks, not scores. Tight tracking is rank concordance.",
+      svg: chartDualLine(data)
+    },
+    {
       kicker: "03 / 05",
-      title: "Slopegraph",
-      copy: "Left: SIGN-Bench rank. Right: G1 rank. Parallel trajectories preserve order; crossings are the models that move.",
+      title: "Rank slopegraph",
+      copy: "Left column: SIGN-Bench rank. Right column: G1 rank. Nearly parallel links preserve order; crossings are the models that move. Hover a line or dot to identify the model.",
       svg: chartSlope(data)
     },
     {
       kicker: "04 / 05",
-      title: "Bland–Altman of ranks",
-      copy: "Mean rank versus rank difference. The ink line is zero difference; dashed lines are ±1.96 SD. Agreement concentrates around zero.",
-      svg: chartBlandAltman(data)
+      title: "Paired-rank dumbbells",
+      copy: "Each row is one model: blue = SIGN-Bench rank, coral = G1 rank. The axis is rank position (1 = best). Bar length is the rank displacement between the two evaluations.",
+      svg: chartDumbbell(data)
     },
     {
       kicker: "05 / 05",
-      title: "Top-k overlap",
-      copy: "Share of models that appear in both top-k lists. The dashed baseline is chance ($k/n$). Elevation above chance is head-of-ranking agreement.",
-      svg: chartTopK(data)
+      title: "Rank-shift corridor",
+      copy: `Signed rank difference Δ = Bench rank − G1 rank. The vertical axis is a rank gap, not a score. Points near zero keep their place; Spearman $\\rho_s=${formatRho(data.spearman)}$ summarises the pairing.`,
+      svg: chartDeviation(data)
     }
   ];
   track.innerHTML = slides.map((slide, i) => `<article class="rank-slide" data-idx="${i}">
@@ -1566,6 +1643,69 @@ function setupRankGallery() {
   });
 }
 
+function setupRankTooltips() {
+  const host = document.querySelector(".rank-gallery-block");
+  if (!host) return;
+  let tip = document.getElementById("rank-tooltip");
+  if (!tip) {
+    tip = document.createElement("div");
+    tip.id = "rank-tooltip";
+    tip.className = "rank-tooltip";
+    tip.hidden = true;
+    document.body.appendChild(tip);
+  }
+  let active = null;
+  const place = (event) => {
+    const pad = 16;
+    tip.style.left = "0px";
+    tip.style.top = "0px";
+    const w = tip.offsetWidth;
+    const h = tip.offsetHeight;
+    let x = event.clientX + pad;
+    let y = event.clientY + pad;
+    if (x + w > window.innerWidth - 10) x = event.clientX - w - pad;
+    if (y + h > window.innerHeight - 10) y = event.clientY - h - pad;
+    tip.style.left = `${Math.max(8, x)}px`;
+    tip.style.top = `${Math.max(8, y)}px`;
+  };
+  const show = (el, event) => {
+    if (active && active !== el) active.classList.remove("is-active");
+    active = el;
+    el.classList.add("is-active");
+    const name = el.getAttribute("data-name") || "";
+    const meta = el.getAttribute("data-meta") || "";
+    tip.innerHTML = `<div class="rank-tooltip-name">${escXml(name)}</div><div class="rank-tooltip-meta">${escXml(meta)}</div>`;
+    tip.hidden = false;
+    place(event);
+  };
+  const hide = () => {
+    if (active) active.classList.remove("is-active");
+    active = null;
+    tip.hidden = true;
+  };
+  host.addEventListener("pointerover", (event) => {
+    const el = event.target.closest(".rank-hit");
+    if (!el || !host.contains(el)) return;
+    show(el, event);
+  });
+  host.addEventListener("pointermove", (event) => {
+    if (tip.hidden) return;
+    const el = event.target.closest(".rank-hit");
+    if (!el) {
+      hide();
+      return;
+    }
+    if (el !== active) show(el, event);
+    else place(event);
+  });
+  host.addEventListener("pointerout", (event) => {
+    const next = event.relatedTarget;
+    if (next && next.closest && next.closest(".rank-hit")) return;
+    hide();
+  });
+  host.querySelector("#rank-gallery-viewport")?.addEventListener("scroll", hide, { passive: true });
+}
+
 // ==============================================================================
 // 7. Initialization
 // ==============================================================================
@@ -1613,9 +1753,10 @@ document.addEventListener("DOMContentLoaded", () => {
   renderLeaderboard();
   setupLeaderboardEvents();
   renderCapabilityHeatmaps();
-  renderG1Table();
+  // renderG1Table();
   renderRankGallery();
   setupRankGallery();
+  setupRankTooltips();
   renderCarousel();
   setupCarouselEvents();
   setupG1Lightbox();
