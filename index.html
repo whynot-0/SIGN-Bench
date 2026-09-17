@@ -10,7 +10,7 @@
   <meta name="keywords" content="SIGN-Bench, VLM, Human-Robot Interaction, Embodied AI, Social Benchmark, Person Localization">
   
   <!-- Local styles only; keep off-site URLs out of markup -->
-  <link rel="stylesheet" href="css/style.css?v=5">
+  <link rel="stylesheet" href="css/style.css?v=6">
   <link rel="stylesheet" href="vendor/katex/katex.min.css?v=3">
 </head>
 <body>
@@ -219,6 +219,22 @@
           • <span class="score-best">Bold</span> denotes the best result; <span class="score-second">underline</span> denotes the second-best result within the active filter view.
         </p>
       </div>
+
+      <div class="heatmap-block" id="capability-heatmaps">
+        <div class="heatmap-intro">
+          <span class="section-tag">Capability Breakdown</span>
+          <h3 class="heatmap-heading">Per-Capability Scores</h3>
+          <p class="heatmap-legend-copy">
+            Each cell is the score on one capability. Color follows a sequential scale from low (pale yellow-green) to high (deep blue).
+          </p>
+          <div class="heatmap-scale" aria-hidden="true">
+            <span>Low</span>
+            <div class="heatmap-scale-bar"></div>
+            <span>High</span>
+          </div>
+        </div>
+        <div id="heatmap-root"></div>
+      </div>
     </div>
   </section>
 
@@ -411,6 +427,6 @@
   <!-- Scripts -->
   <script src="vendor/katex/katex.min.js?v=3"></script>
   <script src="vendor/katex/auto-render.min.js?v=3"></script>
-  <script src="js/main.js?v=5"></script>
+  <script src="js/main.js?v=6"></script>
 </body>
 </html>

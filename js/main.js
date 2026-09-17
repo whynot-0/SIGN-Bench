@@ -810,7 +810,144 @@ function setupCarouselEvents() {
 }
 
 // ==============================================================================
-// 5. Initialization
+// 5. Per-capability heatmaps
+// ==============================================================================
+const HEATMAP_METRICS = [
+  { key: "composition", label: "Cross-level Composition", short: "Composition" },
+  { key: "gaze", label: "Gaze", short: "Gaze" },
+  { key: "expression", label: "Expression", short: "Expression" },
+  { key: "gesture", label: "Gesture", short: "Gesture" },
+  { key: "touch", label: "Touch", short: "Touch" },
+  { key: "attitude", label: "Interpersonal Attitude", short: "Attitude" },
+  { key: "intent", label: "Social Intent", short: "Intent" },
+  { key: "group", label: "Group Activity", short: "Group" },
+  { key: "mean", label: "Mean", short: "Mean" }
+];
+
+const HEATMAP_TABLES = [
+  {
+    title: "API Models",
+    n: 5,
+    rows: [
+      { name: "Gemini 3.7 Flash", scores: [28.4, 58.6, 45.6, 58.5, 34.2, 61.8, 69.5, 30.7, 48.4] },
+      { name: "Gemini 3.1 Pro", scores: [27.7, 59.4, 43.0, 57.6, 41.6, 59.4, 64.6, 30.4, 48.0] },
+      { name: "Qwen-Max", scores: [17.0, 63.9, 43.4, 55.9, 34.7, 53.2, 61.0, 35.7, 45.6] },
+      { name: "Gemini Robotics-ER-2", scores: [9.2, 65.8, 10.4, 55.5, 39.7, 33.5, 68.6, 25.1, 38.5] },
+      { name: "GLM-5.3-Flash", scores: [20.6, 48.9, 37.5, 52.0, 32.4, 36.5, 41.7, 30.7, 37.5] },
+      { name: "Average", isAverage: true, scores: [20.6, 59.3, 36.0, 55.9, 36.5, 48.9, 61.1, 30.5, 43.6] }
+    ]
+  },
+  {
+    title: "Open-Source General VLMs",
+    n: 13,
+    rows: [
+      { name: "Qwen3.6-27B", scores: [32.6, 54.9, 44.0, 47.6, 44.3, 47.4, 54.7, 30.4, 44.5] },
+      { name: "Cosmos3-Nano", scores: [6.4, 55.6, 39.5, 44.1, 52.1, 55.3, 55.2, 32.9, 42.6] },
+      { name: "Qwen3.5-35B-A3B", scores: [7.8, 54.5, 45.6, 55.0, 40.6, 47.9, 56.1, 32.9, 42.6] },
+      { name: "Qwen3-VL-32B", scores: [13.5, 47.0, 40.1, 52.0, 54.8, 48.8, 50.2, 31.8, 42.3] },
+      { name: "Qwen3.6-35B-A3B", scores: [11.3, 56.0, 42.1, 57.6, 32.4, 43.2, 52.9, 36.4, 41.5] },
+      { name: "Qwen3.5-27B", scores: [17.0, 47.7, 43.4, 55.0, 37.9, 45.6, 37.7, 29.3, 39.2] },
+      { name: "Qwen3.8-27B", scores: [15.6, 42.1, 39.5, 57.6, 45.7, 40.9, 35.9, 33.2, 38.8] },
+      { name: "Qwen3-VL-4B", scores: [5.7, 33.5, 39.8, 49.3, 46.1, 44.1, 45.7, 28.6, 36.6] },
+      { name: "InternVL3.5-30B-A3B", scores: [7.8, 24.4, 33.3, 29.7, 41.6, 25.3, 32.3, 14.8, 26.2] },
+      { name: "Qwen3.5-0.8B", scores: [2.1, 21.8, 26.2, 38.4, 26.9, 29.1, 12.1, 23.3, 22.5] },
+      { name: "InternVL3.5-38B", scores: [5.0, 7.1, 23.0, 24.5, 24.7, 20.0, 30.5, 2.5, 17.1] },
+      { name: "Qwen3.5-4B", scores: [1.4, 16.9, 40.5, 30.1, 16.0, 24.1, 0.4, 1.1, 16.3] },
+      { name: "Qwen3.5-2B", scores: [0.7, 11.3, 29.8, 28.4, 18.7, 30.9, 3.1, 2.5, 15.7] },
+      { name: "Average", isAverage: true, scores: [9.8, 36.4, 37.4, 43.8, 37.1, 38.7, 35.9, 23.0, 32.8] }
+    ]
+  },
+  {
+    title: "Open-Source Embodied Foundation Models",
+    n: 8,
+    rows: [
+      { name: "Embodied-R1.5-8B", scores: [9.2, 31.2, 36.2, 47.6, 43.4, 42.4, 46.2, 19.4, 34.5] },
+      { name: "HY-Embodied-VLM-1.0-30B-A3B", scores: [14.2, 21.1, 33.7, 47.6, 41.6, 38.2, 50.2, 26.9, 34.2] },
+      { name: "HY-Embodied-0.5-4B-A2B", scores: [0.0, 29.3, 36.2, 45.9, 33.8, 36.2, 42.6, 25.8, 31.2] },
+      { name: "HY-Embodied-0.5-X-4B-A2B", scores: [0.0, 34.2, 34.6, 40.2, 34.2, 31.8, 40.4, 27.6, 30.4] },
+      { name: "RynnBrain1.1-2B", scores: [0.0, 29.7, 30.7, 38.0, 43.4, 31.2, 12.1, 25.4, 26.3] },
+      { name: "RynnBrain-30B-A3B", scores: [5.0, 21.4, 19.7, 19.2, 20.1, 19.7, 35.4, 8.5, 18.6] },
+      { name: "RoboBrain2.0-32B", scores: [3.5, 6.0, 14.2, 22.7, 23.7, 15.6, 23.8, 1.1, 13.8] },
+      { name: "VeBrain-7B", scores: [1.4, 12.0, 12.3, 6.6, 8.7, 7.1, 4.5, 4.6, 7.1] },
+      { name: "Average", isAverage: true, scores: [4.2, 23.1, 27.2, 33.5, 31.1, 27.8, 31.9, 17.4, 24.5] }
+    ]
+  }
+];
+
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
+function heatmapRgb(value) {
+  const t = Math.max(0, Math.min(1, value / 70));
+  const stops = [
+    [0.00, [236, 252, 203]],
+    [0.18, [167, 243, 208]],
+    [0.36, [94, 234, 212]],
+    [0.52, [34, 211, 238]],
+    [0.68, [56, 189, 248]],
+    [0.84, [37, 99, 235]],
+    [1.00, [30, 58, 138]]
+  ];
+  let i = 0;
+  while (i < stops.length - 1 && t > stops[i + 1][0]) i += 1;
+  const [t0, c0] = stops[i];
+  const [t1, c1] = stops[i + 1];
+  const u = t1 === t0 ? 0 : (t - t0) / (t1 - t0);
+  return [
+    Math.round(lerp(c0[0], c1[0], u)),
+    Math.round(lerp(c0[1], c1[1], u)),
+    Math.round(lerp(c0[2], c1[2], u))
+  ];
+}
+
+function heatmapTextColor(rgb) {
+  const y = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255;
+  return y > 0.58 ? "#0f172a" : "#f8fafc";
+}
+
+function heatmapCell(value, extraClass) {
+  const rgb = heatmapRgb(value);
+  const cls = extraClass ? `heatmap-cell ${extraClass}` : "heatmap-cell";
+  return `<td class="${cls}" style="background:rgb(${rgb.join(',')});color:${heatmapTextColor(rgb)}">${value.toFixed(1)}</td>`;
+}
+
+function renderCapabilityHeatmaps() {
+  const root = document.getElementById("heatmap-root");
+  if (!root) return;
+
+  root.innerHTML = HEATMAP_TABLES.map((table) => {
+    const head = HEATMAP_METRICS.map((metric, idx) => {
+      const gap = (idx === 1 || idx === 5 || idx === 8) ? `<th class="heatmap-gap" aria-hidden="true"></th>` : "";
+      return `${gap}<th title="${metric.label}" class="${metric.key === "mean" ? "heatmap-mean-h" : ""}">${metric.short}</th>`;
+    }).join("");
+
+    const body = table.rows.map((row) => {
+      const icon = row.isAverage ? "" : orgIconHtml({ name: row.name });
+      const cells = row.scores.map((value, idx) => {
+        const gap = (idx === 1 || idx === 5 || idx === 8) ? `<td class="heatmap-gap" aria-hidden="true"></td>` : "";
+        return gap + heatmapCell(value, idx === 8 ? "mean" : "");
+      }).join("");
+      return `<tr class="${row.isAverage ? "heatmap-row-avg" : ""}">
+        <td class="heatmap-model"><span class="heatmap-model-inner">${icon}${row.name}</span></td>
+        ${cells}
+      </tr>`;
+    }).join("");
+
+    return `<article class="heatmap-card">
+      <h4 class="heatmap-card-title">${table.title} <span>(n=${table.n})</span></h4>
+      <div class="heatmap-scroll">
+        <table class="heatmap-table">
+          <thead><tr><th class="heatmap-model-h">Model</th>${head}</tr></thead>
+          <tbody>${body}</tbody>
+        </table>
+      </div>
+    </article>`;
+  }).join("");
+}
+
+// ==============================================================================
+// 6. Initialization
 // ==============================================================================
 function setupG1Lightbox() {
   const lightbox = document.getElementById("g1-lightbox");
@@ -855,6 +992,7 @@ function renderFormulas(root = document.body) {
 document.addEventListener("DOMContentLoaded", () => {
   renderLeaderboard();
   setupLeaderboardEvents();
+  renderCapabilityHeatmaps();
   renderCarousel();
   setupCarouselEvents();
   setupG1Lightbox();
