@@ -1,30 +1,487 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex, nofollow">
-  <title>SIGN-Bench</title>
-  <style>
-    html, body {
-      margin: 0;
-      height: 100%;
-      background: #ffffff;
-    }
-    body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    h1 {
-      margin: 0;
-      font: 400 42px/1.2 "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-      letter-spacing: 0.04em;
-      color: #111111;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIGN-Bench: Benchmarking Person-Grounded Nonverbal Social Understanding in Vision-Language Models</title>
+  
+  <!-- Meta tags for Academic Benchmark -->
+  <meta name="description" content="SIGN-Bench: A novel benchmark comprising 2,010 questions evaluating person-grounded nonverbal social understanding in VLMs via a strict localization-gated protocol.">
+  <meta name="keywords" content="SIGN-Bench, VLM, Human-Robot Interaction, Embodied AI, Social Benchmark, Person Localization">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css">
 </head>
 <body>
-  <h1>SIGN-Bench</h1>
+
+  <!-- ==============================================================================
+       1. Navigation Bar
+       ============================================================================== -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="#" class="navbar-brand">
+        <span>SIGN-Bench</span>
+        <span class="brand-badge">Anonymous</span>
+      </a>
+      <ul class="navbar-nav">
+        <li><a href="#leaderboard" class="nav-link">Leaderboard</a></li>
+        <li><a href="#samples" class="nav-link">Sample Cases</a></li>
+        <li><a href="#real-robot" class="nav-link">Real-World Robot</a></li>
+        <li><a href="#citation" class="nav-link">Citation</a></li>
+        <li>
+          <a href="https://anonymous.4open.science/w/SIGN-Bench-7C13/index.html" target="_blank" rel="noopener noreferrer" class="nav-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+            </svg>
+            Anonymous Repo
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ==============================================================================
+       2. Hero Section
+       ============================================================================== -->
+  <header class="hero">
+    <div class="container">
+      <div class="hero-tag">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        Double-Blind Review | ICRA Submission
+      </div>
+
+      <h1 class="hero-title">
+        <span class="highlight">SIGN-Bench</span>: Benchmarking Person-Grounded Nonverbal Social Understanding in Vision-Language Models
+      </h1>
+
+      <div class="hero-authors">Anonymous Authors</div>
+      <div class="hero-institution">Anonymous Institution</div>
+
+      <!-- Action Buttons -->
+      <div class="hero-links">
+        <a href="#" class="btn btn-primary" title="Anonymous Paper Draft">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          Paper (Anonymous)
+        </a>
+        <a href="https://anonymous.4open.science/w/SIGN-Bench-7C13/index.html" target="_blank" rel="noopener noreferrer" class="btn btn-dark">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+          </svg>
+          Code & Data (Anonymous)
+        </a>
+        <a href="#leaderboard" class="btn btn-outline">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 3v18h18"></path>
+            <rect x="7" y="10" width="3" height="8" rx="1"></rect>
+            <rect x="12" y="5" width="3" height="13" rx="1"></rect>
+            <rect x="17" y="13" width="3" height="5" rx="1"></rect>
+          </svg>
+          Leaderboard
+        </a>
+        <a href="#samples" class="btn btn-outline">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21 15 16 10 5 21"></polyline>
+          </svg>
+          Sample Cases
+        </a>
+        <a href="#real-robot" class="btn btn-outline">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+            <rect x="9" y="9" width="6" height="6"></rect>
+            <line x1="9" y1="1" x2="9" y2="4"></line>
+            <line x1="15" y1="1" x2="15" y2="4"></line>
+          </svg>
+          Real-World Robot
+        </a>
+      </div>
+
+      <!-- Highlight Stats Cards -->
+      <div class="hero-stats">
+        <div class="stat-card">
+          <div class="stat-number">2,010</div>
+          <div class="stat-label">VQA Questions (50% H-H / 50% H-R)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">$\mathrm{IoU} \ge 0.5$</div>
+          <div class="stat-label">Strict Two-Stage Localization Gate</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">26</div>
+          <div class="stat-label">Evaluated State-of-the-art VLMs</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">$\rho = 0.782$</div>
+          <div class="stat-label">Strong Correlation with Real Robot G1</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==============================================================================
+       4. Leaderboard Section (Table II in Paper)
+       ============================================================================== -->
+  <section id="leaderboard" class="leaderboard-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Benchmark Evaluation</span>
+        <h2 class="section-title">SIGN-Bench Leaderboard</h2>
+      </div>
+
+      <!-- Controls: Category Filters & Search -->
+      <div class="leaderboard-controls">
+        <div class="filter-group">
+          <button class="filter-btn active" data-filter="all">All Models (26)</button>
+          <button class="filter-btn" data-filter="proprietary">Proprietary (5)</button>
+          <button class="filter-btn" data-filter="general">Open General VLMs (13)</button>
+          <button class="filter-btn" data-filter="embodied">Open Embodied VLMs (8)</button>
+        </div>
+
+        <div class="search-box">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="search-input" class="search-input" placeholder="Search models (e.g., Gemini, Qwen)...">
+        </div>
+      </div>
+
+      <!-- Table Wrapper -->
+      <div class="table-wrapper">
+        <table class="leaderboard-table">
+          <thead>
+            <!-- Group Header -->
+            <tr>
+              <th rowspan="2" class="col-rank">#</th>
+              <th rowspan="2" class="col-model">Model</th>
+              <th rowspan="2">Type</th>
+              
+              <!-- Overall -->
+              <th colspan="4" class="th-group th-group-overall">Overall</th>
+              
+              <!-- Human-Human -->
+              <th colspan="4" class="th-group th-group-hh">Human-Human</th>
+              
+              <!-- Human-Robot -->
+              <th colspan="4" class="th-group th-group-hr">Human-Robot</th>
+            </tr>
+            
+            <!-- Metric Columns Header -->
+            <tr>
+              <!-- Overall Metrics -->
+              <th class="sortable col-gated-header" data-sort="overall.gated" title="Joint localization and exact-match success over all items">
+                Gated Acc. <span class="sort-icon">▼</span>
+              </th>
+              <th class="sortable" data-sort="overall.per" title="Localization pass rate at IoU >= 0.5">
+                Human Per. <span class="sort-icon">↕</span>
+              </th>
+              <th class="sortable" data-sort="overall.nonverbal" title="Nonverbal cue understanding exact-match on items passing localization">
+                Nonverbal Und. <span class="sort-icon">↕</span>
+              </th>
+              <th class="sortable" data-sort="overall.social" title="Social reasoning exact-match on items passing localization">
+                Social Reason. <span class="sort-icon">↕</span>
+              </th>
+
+              <!-- Human-Human Metrics -->
+              <th class="sortable col-gated-header" data-sort="hh.gated">
+                Gated Acc. <span class="sort-icon">↕</span>
+              </th>
+              <th class="sortable" data-sort="hh.per">
+                Human Per. <span class="sort-icon">↕</span>
+              </th>
+              <th class="sortable" data-sort="hh.nonverbal">
+                Nonverbal Und. <span class="sort-icon">↕</span>
+              </th>
+              <th class="sortable" data-sort="hh.social">
+                Social Reason. <span class="sort-icon">↕</span>
+              </th>
+
+              <!-- Human-Robot Metrics -->
+              <th class="sortable col-gated-header" data-sort="hr.gated">
+                Gated Acc. <span class="sort-icon">↕</span>
+              </th>
+              <th class="sortable" data-sort="hr.per">
+                Human Per. <span class="sort-icon">↕</span>
+              </th>
+              <th class="sortable" data-sort="hr.nonverbal">
+                Nonverbal Und. <span class="sort-icon">↕</span>
+              </th>
+              <th class="sortable" data-sort="hr.social">
+                Social Reason. <span class="sort-icon">↕</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-tbody">
+            <!-- Populated dynamically via main.js -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footnote / Table Notes -->
+      <div class="table-notes">
+        <p><strong>Metric Definitions:</strong></p>
+        <p>
+          • <strong>Gated Acc. (Primary Metric)</strong>: Joint person localization and semantic exact-match success over all benchmark items ($S = p \times A$). Shaded in light blue.
+        </p>
+        <p>
+          • <strong>Human Per.</strong>: Stage 1 person localization pass rate at $\mathrm{IoU} \ge 0.5$.
+        </p>
+        <p>
+          • <strong>Nonverbal Und. & Social Reason.</strong>: Exact-match accuracy on items passing Stage 1 localization within the corresponding capability level.
+        </p>
+        <p>
+          • <span class="score-best">Bold</span> denotes the best result; <span class="score-second">underline</span> denotes the second-best result within the active filter view.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==============================================================================
+       5. Sample Cases Section (Interactive Carousel)
+       ============================================================================== -->
+  <section id="samples" class="sample-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Visual Question Answering</span>
+        <h2 class="section-title">Benchmark Sample Cases</h2>
+        <p class="section-subtitle">
+          Interactive carousel showcasing representative task types across Human Perception, Social Signal Understanding, and Social Reasoning. Visual slots are primed for candidate frame injection.
+        </p>
+      </div>
+
+      <!-- Carousel Container -->
+      <div class="carousel-container">
+        <!-- Category Filter for Carousel -->
+        <div class="carousel-filter">
+          <button class="carousel-filter-btn active" data-cat="all">All Cases (9)</button>
+          <button class="carousel-filter-btn" data-cat="perception">Human Perception</button>
+          <button class="carousel-filter-btn" data-cat="gaze">Gaze</button>
+          <button class="carousel-filter-btn" data-cat="gesture">Gesture</button>
+          <button class="carousel-filter-btn" data-cat="touch">Touch</button>
+          <button class="carousel-filter-btn" data-cat="expression">Expression</button>
+          <button class="carousel-filter-btn" data-cat="composition">Composition</button>
+          <button class="carousel-filter-btn" data-cat="attitude">Attitude</button>
+          <button class="carousel-filter-btn" data-cat="intent">Intent</button>
+          <button class="carousel-filter-btn" data-cat="group">Group Activity</button>
+        </div>
+
+        <!-- Carousel Viewport -->
+        <div class="carousel-viewport">
+          <div id="carousel-track" class="carousel-track">
+            <!-- Populated dynamically by main.js with image & card placeholders -->
+          </div>
+        </div>
+
+        <!-- Prev / Next Navigation Buttons -->
+        <button id="carousel-btn-prev" class="carousel-btn carousel-btn-prev" aria-label="Previous sample">
+          &#10094;
+        </button>
+        <button id="carousel-btn-next" class="carousel-btn carousel-btn-next" aria-label="Next sample">
+          &#10095;
+        </button>
+
+        <!-- Dots -->
+        <div id="carousel-dots" class="carousel-dots"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==============================================================================
+       6. Real-World Robot Validation Section (Unitree G1)
+       ============================================================================== -->
+  <section id="real-robot" class="realworld-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Embodied Hardware Verification</span>
+        <h2 class="section-title">Real-World Robot Validation (Unitree G1)</h2>
+        <p class="section-subtitle">
+          We ran 110 real-world samples with 11 participants on Unitree G1. Four example trials are shown below, each with a third-person view and a robot view.
+        </p>
+      </div>
+
+      <div class="correlation-wrap">
+        <div class="correlation-card">
+          <span class="correlation-val">$\rho = 0.782$</span>
+          <span class="correlation-split">overall</span>
+          <span style="color: var(--slate-300);">|</span>
+          <span class="correlation-val" style="color: var(--indigo);">$\rho = 0.725$</span>
+          <span class="correlation-split">human–robot subset</span>
+        </div>
+        <p class="correlation-note">
+          Spearman $\rho$ is the rank correlation between SIGN-Bench gated accuracy and G1 hardware gated accuracy. Values near $1$ mean the offline benchmark ranking matches the robot ranking.
+        </p>
+      </div>
+
+      <!-- Dual-view G1 interaction gallery: 4 trials × (third-person + robot view) -->
+      <div class="g1-trials-grid">
+
+        <article class="g1-trial-card">
+          <header class="g1-trial-header">
+            <span class="g1-trial-index">01</span>
+            <h4 class="g1-trial-title">Wave</h4>
+          </header>
+          <div class="g1-dual-view">
+            <figure class="g1-view">
+              <button class="g1-view-btn" data-full="images/realworld/trial01_third.jpg" aria-label="Enlarge third-person view">
+                <img src="images/realworld/trial01_third.jpg" alt="Wave, third-person">
+              </button>
+              <figcaption><span class="view-dot third"></span>Third-person</figcaption>
+            </figure>
+            <figure class="g1-view">
+              <button class="g1-view-btn" data-full="images/realworld/trial01_ego.jpg" aria-label="Enlarge robot view">
+                <img src="images/realworld/trial01_ego.jpg" alt="Wave, robot view">
+              </button>
+              <figcaption><span class="view-dot ego"></span>Robot view</figcaption>
+            </figure>
+          </div>
+        </article>
+
+        <article class="g1-trial-card">
+          <header class="g1-trial-header">
+            <span class="g1-trial-index">02</span>
+            <h4 class="g1-trial-title">Point</h4>
+          </header>
+          <div class="g1-dual-view">
+            <figure class="g1-view">
+              <button class="g1-view-btn" data-full="images/realworld/trial02_third.jpg" aria-label="Enlarge third-person view">
+                <img src="images/realworld/trial02_third.jpg" alt="Point, third-person">
+              </button>
+              <figcaption><span class="view-dot third"></span>Third-person</figcaption>
+            </figure>
+            <figure class="g1-view">
+              <button class="g1-view-btn" data-full="images/realworld/trial02_ego.jpg" aria-label="Enlarge robot view">
+                <img src="images/realworld/trial02_ego.jpg" alt="Point, robot view">
+              </button>
+              <figcaption><span class="view-dot ego"></span>Robot view</figcaption>
+            </figure>
+          </div>
+        </article>
+
+        <article class="g1-trial-card">
+          <header class="g1-trial-header">
+            <span class="g1-trial-index">03</span>
+            <h4 class="g1-trial-title">Handshake</h4>
+          </header>
+          <div class="g1-dual-view">
+            <figure class="g1-view">
+              <button class="g1-view-btn" data-full="images/realworld/trial03_third.jpg" aria-label="Enlarge third-person view">
+                <img src="images/realworld/trial03_third.jpg" alt="Handshake, third-person">
+              </button>
+              <figcaption><span class="view-dot third"></span>Third-person</figcaption>
+            </figure>
+            <figure class="g1-view">
+              <button class="g1-view-btn" data-full="images/realworld/trial03_ego.jpg" aria-label="Enlarge robot view">
+                <img src="images/realworld/trial03_ego.jpg" alt="Handshake, robot view">
+              </button>
+              <figcaption><span class="view-dot ego"></span>Robot view</figcaption>
+            </figure>
+          </div>
+        </article>
+
+        <article class="g1-trial-card">
+          <header class="g1-trial-header">
+            <span class="g1-trial-index">04</span>
+            <h4 class="g1-trial-title">Throw</h4>
+          </header>
+          <div class="g1-dual-view">
+            <figure class="g1-view">
+              <button class="g1-view-btn" data-full="images/realworld/trial04_third.jpg" aria-label="Enlarge third-person view">
+                <img src="images/realworld/trial04_third.jpg" alt="Throw, third-person">
+              </button>
+              <figcaption><span class="view-dot third"></span>Third-person</figcaption>
+            </figure>
+            <figure class="g1-view">
+              <button class="g1-view-btn" data-full="images/realworld/trial04_ego.jpg" aria-label="Enlarge robot view">
+                <img src="images/realworld/trial04_ego.jpg" alt="Throw, robot view">
+              </button>
+              <figcaption><span class="view-dot ego"></span>Robot view</figcaption>
+            </figure>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Image lightbox for real-world dual views -->
+  <div id="g1-lightbox" class="g1-lightbox" hidden>
+    <button class="g1-lightbox-close" type="button" aria-label="Close image">×</button>
+    <img id="g1-lightbox-img" alt="Enlarged real-world interaction frame">
+  </div>
+
+  <!-- ==============================================================================
+       7. BibTeX Citation Section (Anonymous)
+       ============================================================================== -->
+  <section id="citation" class="citation-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Reference</span>
+        <h2 class="section-title">BibTeX Citation</h2>
+        <p class="section-subtitle">
+          If you find SIGN-Bench useful for your research, please consider citing our work.
+        </p>
+      </div>
+
+      <div class="citation-box">
+        <div class="citation-header">
+          <span class="citation-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            BibTeX (Anonymous Format)
+          </span>
+          <button id="btn-copy-bibtex" class="btn-copy">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            Copy Citation
+          </button>
+        </div>
+        <pre class="citation-code"><code id="bibtex-code">@article{signbench2026,
+  title={SIGN-Bench: Benchmarking Person-Grounded Nonverbal Social Understanding in Vision-Language Models},
+  author={Anonymous Authors},
+  journal={Under Review},
+  year={2026}
+}</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==============================================================================
+       8. Footer (Strictly Anonymous)
+       ============================================================================== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-links">
+        <a href="#leaderboard" class="footer-link">Leaderboard</a>
+        <a href="#samples" class="footer-link">Sample Cases</a>
+        <a href="#real-robot" class="footer-link">Real-World Robot</a>
+        <a href="https://anonymous.4open.science/w/SIGN-Bench-7C13/index.html" target="_blank" rel="noopener noreferrer" class="footer-link">Anonymous Code</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/contrib/auto-render.min.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>
