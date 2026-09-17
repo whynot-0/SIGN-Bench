@@ -721,11 +721,9 @@ function renderCarousel() {
           </div>
         </div>
 
-        <!-- Bottom Footer: Clean, strictly no debug/developer paths -->
-        <div class="card-footer-note">
-          <span><strong>Gold Answer:</strong> (${sample.goldAnswer})</span>
-          <span><strong>Evaluation Protocol:</strong> Stage 1 Localization Gate ($\\mathrm{IoU} \\ge 0.5$) → Stage 2 Semantic Reading</span>
-        </div>
+        ${sample.category === "perception" ? "" : `<div class="card-footer-note">
+          <span><strong>Answer:</strong> (${sample.goldAnswer})</span>
+        </div>`}
       </div>
     `;
 
