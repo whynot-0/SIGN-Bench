@@ -935,7 +935,7 @@ function renderCapabilityHeatmaps() {
     }).join("");
 
     return `<article class="heatmap-card">
-      <h4 class="heatmap-card-title">${table.title} <span>(n=${table.n})</span></h4>
+      <h4 class="heatmap-card-title">${table.title}</h4>
       <div class="heatmap-scroll">
         <table class="heatmap-table">
           <thead><tr><th class="heatmap-model-h">Model</th>${head}</tr></thead>
