@@ -9,14 +9,9 @@
   <meta name="description" content="SIGN-Bench: A novel benchmark comprising 2,010 questions evaluating person-grounded nonverbal social understanding in VLMs via a strict localization-gated protocol.">
   <meta name="keywords" content="SIGN-Bench, VLM, Human-Robot Interaction, Embodied AI, Social Benchmark, Person Localization">
   
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  
-  <!-- Custom Styles -->
+  <!-- Local styles only; keep off-site URLs out of markup -->
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css">
+  <link rel="stylesheet" href="vendor/katex/katex.min.css">
 </head>
 <body>
 
@@ -25,7 +20,7 @@
        ============================================================================== -->
   <nav class="navbar">
     <div class="container">
-      <a href="#" class="navbar-brand">
+      <a href="./index.html" class="navbar-brand">
         <span>SIGN-Bench</span>
         <span class="brand-badge">Anonymous</span>
       </a>
@@ -35,7 +30,7 @@
         <li><a href="#real-robot" class="nav-link">Real-World Robot</a></li>
         <li><a href="#citation" class="nav-link">Citation</a></li>
         <li>
-          <a href="https://anonymous.4open.science/w/SIGN-Bench-7C13/index.html" target="_blank" rel="noopener noreferrer" class="nav-btn">
+          <a href="/r/SIGN-Bench-7C13/" data-anon-repo target="_blank" rel="noopener noreferrer" class="nav-btn">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
             </svg>
@@ -68,7 +63,7 @@
 
       <!-- Action Buttons -->
       <div class="hero-links">
-        <a href="#" class="btn btn-primary" title="Anonymous Paper Draft">
+        <span class="btn btn-primary btn-disabled" title="Anonymous paper draft (double-blind submission)">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
             <polyline points="14 2 14 8 20 8"></polyline>
@@ -77,8 +72,8 @@
             <polyline points="10 9 9 9 8 9"></polyline>
           </svg>
           Paper (Anonymous)
-        </a>
-        <a href="https://anonymous.4open.science/w/SIGN-Bench-7C13/index.html" target="_blank" rel="noopener noreferrer" class="btn btn-dark">
+        </span>
+        <a href="/r/SIGN-Bench-7C13/" data-anon-repo target="_blank" rel="noopener noreferrer" class="btn btn-dark">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
           </svg>
@@ -474,14 +469,14 @@
         <a href="#leaderboard" class="footer-link">Leaderboard</a>
         <a href="#samples" class="footer-link">Sample Cases</a>
         <a href="#real-robot" class="footer-link">Real-World Robot</a>
-        <a href="https://anonymous.4open.science/w/SIGN-Bench-7C13/index.html" target="_blank" rel="noopener noreferrer" class="footer-link">Anonymous Code</a>
+        <a href="/r/SIGN-Bench-7C13/" data-anon-repo target="_blank" rel="noopener noreferrer" class="footer-link">Anonymous Code</a>
       </div>
     </div>
   </footer>
 
   <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/contrib/auto-render.min.js"></script>
+  <script src="vendor/katex/katex.min.js"></script>
+  <script src="vendor/katex/auto-render.min.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

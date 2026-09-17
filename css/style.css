@@ -87,6 +87,19 @@ body {
   height: 4rem;
 }
 
+#leaderboard,
+#samples,
+#real-robot,
+#citation {
+  scroll-margin-top: 5rem;
+}
+
+.btn-disabled {
+  cursor: default;
+  pointer-events: none;
+  box-shadow: none;
+}
+
 .navbar-brand {
   display: flex;
   align-items: center;

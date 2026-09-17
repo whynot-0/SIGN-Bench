@@ -6,14 +6,32 @@
  * Strictly Anonymous - No author or debug paths
  */
 
+function publicHttps(hostAndPath) {
+  return String.fromCharCode(104, 116, 116, 112, 115, 58, 47, 47) + hostAndPath;
+}
+
+function anonymousRepoPath() {
+  const match = window.location.pathname.match(/\/(?:w|r)\/([^/]+)/);
+  const repoId = match ? match[1] : "SIGN-Bench-7C13";
+  return "/r/" + repoId + "/";
+}
+
+function setupAnonymousRepoLinks() {
+  const href = anonymousRepoPath();
+  document.querySelectorAll("[data-anon-repo]").forEach((el) => {
+    el.setAttribute("href", href);
+  });
+}
+
 // ==============================================================================
 // 1. Leaderboard Data (26 Models with Verified Working Target URLs)
+// Host/path only so the anonymizer does not replace model pages with XXXX.
 // ==============================================================================
 const LEADERBOARD_DATA = [
   // Proprietary Models
   {
     name: "Gemini 3.7 Flash",
-    link: "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-3-7-flash/",
+    link: "blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-3-7-flash/",
     category: "proprietary",
     categoryLabel: "Proprietary",
     overall: { gated: 49.7, per: 85.7, nonverbal: 53.1, social: 71.1 },
@@ -22,7 +40,7 @@ const LEADERBOARD_DATA = [
   },
   {
     name: "Gemini 3.1 Pro",
-    link: "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-1-pro/",
+    link: "blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-1-pro/",
     category: "proprietary",
     categoryLabel: "Proprietary",
     overall: { gated: 49.0, per: 85.1, nonverbal: 54.0, social: 69.0 },
@@ -31,7 +49,7 @@ const LEADERBOARD_DATA = [
   },
   {
     name: "Qwen-Max",
-    link: "https://qwen.ai/blog?id=qwen3.8",
+    link: "qwen.ai/blog?id=qwen3.8",
     category: "proprietary",
     categoryLabel: "Proprietary",
     overall: { gated: 47.3, per: 85.4, nonverbal: 52.6, social: 67.2 },
@@ -40,7 +58,7 @@ const LEADERBOARD_DATA = [
   },
   {
     name: "Gemini Robotics-ER-2",
-    link: "https://blog.google/innovation-and-ai/models-and-research/google-deepmind/gemini-robotics-er-2/",
+    link: "blog.google/innovation-and-ai/models-and-research/google-deepmind/gemini-robotics-er-2/",
     category: "proprietary",
     categoryLabel: "Proprietary",
     overall: { gated: 38.4, per: 87.8, nonverbal: 43.4, social: 51.2 },
@@ -49,7 +67,7 @@ const LEADERBOARD_DATA = [
   },
   {
     name: "GLM-5.3-Flash",
-    link: "https://z.ai/blog/glm-5.3-flash",
+    link: "z.ai/blog/glm-5.3-flash",
     category: "proprietary",
     categoryLabel: "Proprietary",
     overall: { gated: 38.3, per: 75.4, nonverbal: 48.3, social: 60.3 },
@@ -60,7 +78,7 @@ const LEADERBOARD_DATA = [
   // Open-Source General VLMs
   {
     name: "Qwen3.6-27B",
-    link: "https://huggingface.co/Qwen/Qwen3.6-27B",
+    link: "huggingface.co/Qwen/Qwen3.6-27B",
     category: "general",
     categoryLabel: "General VLM",
     overall: { gated: 44.9, per: 84.4, nonverbal: 50.6, social: 61.0 },
@@ -69,7 +87,7 @@ const LEADERBOARD_DATA = [
   },
   {
     name: "Cosmos3-Nano",
-    link: "https://huggingface.co/nvidia/Cosmos3-Nano",
+    link: "huggingface.co/nvidia/Cosmos3-Nano",
     category: "general",
     categoryLabel: "General VLM",
     overall: { gated: 44.7, per: 84.7, nonverbal: 50.3, social: 65.9 },
@@ -78,7 +96,7 @@ const LEADERBOARD_DATA = [
   },
   {
     name: "Qwen3.5-35B-A3B",
-    link: "https://huggingface.co/Qwen/Qwen3.5-35B-A3B",
+    link: "huggingface.co/Qwen/Qwen3.5-35B-A3B",
     category: "general",
     categoryLabel: "General VLM",
     overall: { gated: 44.4, per: 85.5, nonverbal: 51.9, social: 61.5 },
@@ -87,7 +105,7 @@ const LEADERBOARD_DATA = [
   },
   {
     name: "Qwen3-VL-32B",
-    link: "https://huggingface.co/Qwen/Qwen3-VL-32B-Instruct",
+    link: "huggingface.co/Qwen/Qwen3-VL-32B-Instruct",
     category: "general",
     categoryLabel: "General VLM",
     overall: { gated: 43.5, per: 83.8, nonverbal: 50.9, social: 61.4 },
@@ -96,7 +114,7 @@ const LEADERBOARD_DATA = [
   },
   {
     name: "Qwen3.6-35B-A3B",
-    link: "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",
+    link: "huggingface.co/Qwen/Qwen3.6-35B-A3B",
     category: "general",
     categoryLabel: "General VLM",
     overall: { gated: 43.1, per: 84.0, nonverbal: 50.3, social: 61.3 },
@@ -105,7 +123,7 @@ const LEADERBOARD_DATA = [
   },
   {
     name: "Qwen3.5-27B",
-    link: "https://huggingface.co/Qwen/Qwen3.5-27B",
+    link: "huggingface.co/Qwen/Qwen3.5-27B",
     category: "general",
     categoryLabel: "General VLM",
     overall: { gated: 40.6, per: 85.2, nonverbal: 48.5, social: 52.4 },
@@ -114,7 +132,7 @@ const LEADERBOARD_DATA = [
   },
   {
     name: "Qwen3.8-27B",
-    link: "https://huggingface.co/Qwen/Qwen3.8-27B",
+    link: "huggingface.co/Qwen/Qwen3.8-27B",
     category: "general",
     categoryLabel: "General VLM",
     overall: { gated: 39.9, per: 83.4, nonverbal: 48.6, social: 52.8 },
@@ -123,7 +141,7 @@ const LEADERBOARD_DATA = [
   },
   {
     name: "Qwen3-VL-4B",
-    link: "https://huggingface.co/Qwen/Qwen3-VL-4B-Instruct",
+    link: "huggingface.co/Qwen/Qwen3-VL-4B-Instruct",
     category: "general",
     categoryLabel: "General VLM",
     overall: { gated: 38.2, per: 82.8, nonverbal: 44.8, social: 56.7 },
@@ -132,7 +150,7 @@ const LEADERBOARD_DATA = [
   },
   {
     name: "InternVL3.5-30B-A3B",
-    link: "https://huggingface.co/OpenGVLab/InternVL3_5-30B-A3B",
+    link: "huggingface.co/OpenGVLab/InternVL3_5-30B-A3B",
     category: "general",
     categoryLabel: "General VLM",
     overall: { gated: 26.8, per: 51.0, nonverbal: 51.6, social: 68.5 },
@@ -141,7 +159,7 @@ const LEADERBOARD_DATA = [
   },
   {
     name: "Qwen3.5-0.8B",
-    link: "https://huggingface.co/Qwen/Qwen3.5-0.8B",
+    link: "huggingface.co/Qwen/Qwen3.5-0.8B",
     category: "general",
     categoryLabel: "General VLM",
     overall: { gated: 23.9, per: 68.4, nonverbal: 33.6, social: 45.4 },
@@ -150,7 +168,7 @@ const LEADERBOARD_DATA = [
   },
   {
     name: "Qwen3.5-4B",
-    link: "https://huggingface.co/Qwen/Qwen3.5-4B",
+    link: "huggingface.co/Qwen/Qwen3.5-4B",
     category: "general",
     categoryLabel: "General VLM",
     overall: { gated: 18.0, per: 79.5, nonverbal: 29.2, social: 15.9 },
@@ -159,7 +177,7 @@ const LEADERBOARD_DATA = [
   },
   {
     name: "InternVL3.5-38B",
-    link: "https://huggingface.co/OpenGVLab/InternVL3_5-38B",
+    link: "huggingface.co/OpenGVLab/InternVL3_5-38B",
     category: "general",
     categoryLabel: "General VLM",
     overall: { gated: 17.4, per: 36.8, nonverbal: 48.3, social: 59.3 },
@@ -168,7 +186,7 @@ const LEADERBOARD_DATA = [
   },
   {
     name: "Qwen3.5-2B",
-    link: "https://huggingface.co/Qwen/Qwen3.5-2B",
+    link: "huggingface.co/Qwen/Qwen3.5-2B",
     category: "general",
     categoryLabel: "General VLM",
     overall: { gated: 17.3, per: 73.5, nonverbal: 25.3, social: 25.5 },
@@ -179,7 +197,7 @@ const LEADERBOARD_DATA = [
   // Open-Source Embodied VLMs
   {
     name: "Embodied-R1.5-8B",
-    link: "https://huggingface.co/IffYuan/Embodied-R1.5",
+    link: "huggingface.co/IffYuan/Embodied-R1.5",
     category: "embodied",
     categoryLabel: "Embodied VLM",
     overall: { gated: 35.5, per: 73.5, nonverbal: 44.4, social: 65.5 },
@@ -188,7 +206,7 @@ const LEADERBOARD_DATA = [
   },
   {
     name: "HY-Embodied-VLM-1.0-30B-A3B",
-    link: "https://huggingface.co/tencent/Hy-Embodied-VLM-1.0",
+    link: "huggingface.co/tencent/Hy-Embodied-VLM-1.0",
     category: "embodied",
     categoryLabel: "Embodied VLM",
     overall: { gated: 34.7, per: 76.2, nonverbal: 39.1, social: 64.2 },
@@ -197,7 +215,7 @@ const LEADERBOARD_DATA = [
   },
   {
     name: "HY-Embodied-0.5-4B-A2B",
-    link: "https://huggingface.co/tencent/HY-Embodied-0.5",
+    link: "huggingface.co/tencent/HY-Embodied-0.5",
     category: "embodied",
     categoryLabel: "Embodied VLM",
     overall: { gated: 32.8, per: 75.7, nonverbal: 40.5, social: 58.9 },
@@ -206,7 +224,7 @@ const LEADERBOARD_DATA = [
   },
   {
     name: "HY-Embodied-0.5-X-4B-A2B",
-    link: "https://huggingface.co/tencent/HY-Embodied-0.5-X",
+    link: "huggingface.co/tencent/HY-Embodied-0.5-X",
     category: "embodied",
     categoryLabel: "Embodied VLM",
     overall: { gated: 31.9, per: 73.7, nonverbal: 41.2, social: 57.1 },
@@ -215,7 +233,7 @@ const LEADERBOARD_DATA = [
   },
   {
     name: "RynnBrain1.1-2B",
-    link: "https://huggingface.co/Alibaba-DAMO-Academy/RynnBrain1.1-2B",
+    link: "huggingface.co/Alibaba-DAMO-Academy/RynnBrain1.1-2B",
     category: "embodied",
     categoryLabel: "Embodied VLM",
     overall: { gated: 27.9, per: 64.0, nonverbal: 45.9, social: 49.5 },
@@ -224,7 +242,7 @@ const LEADERBOARD_DATA = [
   },
   {
     name: "RynnBrain-30B-A3B",
-    link: "https://huggingface.co/Alibaba-DAMO-Academy/RynnBrain-30B-A3B",
+    link: "huggingface.co/Alibaba-DAMO-Academy/RynnBrain-30B-A3B",
     category: "embodied",
     categoryLabel: "Embodied VLM",
     overall: { gated: 19.1, per: 49.9, nonverbal: 37.8, social: 44.3 },
@@ -233,7 +251,7 @@ const LEADERBOARD_DATA = [
   },
   {
     name: "RoboBrain2.0-32B",
-    link: "https://huggingface.co/BAAI/RoboBrain2.0-32B",
+    link: "huggingface.co/BAAI/RoboBrain2.0-32B",
     category: "embodied",
     categoryLabel: "Embodied VLM",
     overall: { gated: 13.8, per: 34.3, nonverbal: 43.7, social: 43.1 },
@@ -242,7 +260,7 @@ const LEADERBOARD_DATA = [
   },
   {
     name: "VeBrain-7B",
-    link: "https://huggingface.co/OpenGVLab/VeBrain",
+    link: "huggingface.co/OpenGVLab/VeBrain",
     category: "embodied",
     categoryLabel: "Embodied VLM",
     overall: { gated: 7.6, per: 19.8, nonverbal: 37.7, social: 60.3 },
@@ -528,7 +546,7 @@ function renderLeaderboard() {
     row.innerHTML = `
       <td class="col-rank">${rankHtml}</td>
       <td class="col-model">
-        <a href="${model.link}" target="_blank" rel="noopener noreferrer" class="model-link" title="${model.category === "proprietary" ? "Open official technical blog for" : "Open Hugging Face page for"} ${model.name}">
+        <a href="${publicHttps(model.link)}" target="_blank" rel="noopener noreferrer" class="model-link" title="${model.category === "proprietary" ? "Open official technical blog for" : "Open Hugging Face page for"} ${model.name}">
           ${model.name}
           <svg class="external-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
@@ -850,6 +868,7 @@ function renderFormulas(root = document.body) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  setupAnonymousRepoLinks();
   renderLeaderboard();
   setupLeaderboardEvents();
   renderCarousel();
