@@ -810,14 +810,14 @@ function setupCarouselEvents() {
 // 5. Per-capability heatmaps
 // ==============================================================================
 const HEATMAP_METRICS = [
-  { key: "composition", label: "Cross-level Composition", short: "Comp." },
+  { key: "composition", label: "Cross-level Composition", short: "Cross-level<br>Composition" },
   { key: "gaze", label: "Gaze", short: "Gaze" },
-  { key: "expression", label: "Expression", short: "Expr." },
+  { key: "expression", label: "Expression", short: "Expression" },
   { key: "gesture", label: "Gesture", short: "Gesture" },
   { key: "touch", label: "Touch", short: "Touch" },
   { key: "attitude", label: "Interpersonal Attitude", short: "Attitude" },
   { key: "intent", label: "Social Intent", short: "Intent" },
-  { key: "group", label: "Group Activity", short: "Group" },
+  { key: "group", label: "Group Activity", short: "Group Act." },
   { key: "mean", label: "Mean", short: "Mean" }
 ];
 
@@ -916,7 +916,11 @@ function renderCapabilityHeatmaps() {
   root.innerHTML = HEATMAP_TABLES.map((table) => {
     const head = HEATMAP_METRICS.map((metric, idx) => {
       const gap = (idx === 1 || idx === 5 || idx === 8) ? `<th class="heatmap-gap" aria-hidden="true"></th>` : "";
-      return `${gap}<th title="${metric.label}" class="${metric.key === "mean" ? "heatmap-mean-h" : ""}">${metric.short}</th>`;
+      const extra = [
+        metric.key === "mean" ? "heatmap-mean-h" : "",
+        metric.key === "composition" ? "heatmap-long-h" : ""
+      ].filter(Boolean).join(" ");
+      return `${gap}<th title="${metric.label}" class="${extra}">${metric.short}</th>`;
     }).join("");
 
     const body = table.rows.map((row) => {

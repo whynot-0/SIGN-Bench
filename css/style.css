@@ -944,6 +944,12 @@ section {
   line-height: 1.25;
 }
 
+.heatmap-table th.heatmap-long-h {
+  font-size: 0.56rem;
+  letter-spacing: 0.01em;
+  white-space: normal;
+}
+
 .heatmap-table th.heatmap-model-h,
 .heatmap-model {
   width: 14.5rem;
